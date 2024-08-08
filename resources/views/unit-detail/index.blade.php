@@ -1,10 +1,11 @@
 @extends('layout.dashboard')
 @section('content')
-<form action="{{ isset($data) ? '/units/' . $data->id : '/units' }}" method="POST">
+<form action="{{ isset($data) ? '/unit/' . $unitID . '/details/' . $data->id : '/unit/' . $unitID . '/details/' }}" method="POST">
 	@csrf
 	@if (isset($data))
 		@method('PUT')
 	@endif
+	<input type="hidden" name="unit_id" value="{{ $unitID }}">
 	<input type="text" name="name" value="{{ $data['name'] ?? null }}" placeholder="Nama">
 	
 	<button type="submit">Simpan</button>
@@ -14,14 +15,10 @@
 <table>
 	<tr>
 		<th>Nama</th>
-		<th>Detail</th>
 	</tr>
 	@foreach ($tables as $table)
 		<tr>
 			<td>{{ $table->name }}</td>
-			<td>
-				<a href="{{ route('unit-detail.view', ['unit_id' => 1]) }}">Add Detail</a>
-			</td>
 		</tr>
 	@endforeach
 </table>

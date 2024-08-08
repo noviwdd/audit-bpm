@@ -35,7 +35,12 @@ class DatabaseSeeder extends Seeder
             'can_create_units',
             'can_view_units',
             'can_update_units',
-            'can_delete_units'
+            'can_delete_units',
+
+            'can_create_unit_details',
+            'can_view_unit_details',
+            'can_update_unit_details',
+            'can_delete_unit_details'
         ];
 
         foreach ($permissions as $permission) {

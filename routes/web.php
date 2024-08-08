@@ -8,6 +8,7 @@ use App\Http\Controllers\ManagementUserController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\TargetController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\UnitDetailController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -43,3 +44,9 @@ Route::get('/units/{id?}', [UnitController::class, 'view']);
 Route::post('/units', [UnitController::class, 'create']);
 Route::put('/units/{id}', [UnitController::class, 'update']);
 Route::delete('/units/{id}', [UnitController::class, 'remove']);
+
+// Unit Detail
+Route::get('/unit/{unit_id}/details/{id?}', [UnitDetailController::class, 'view'])->name('unit-detail.view');
+Route::post('/unit/{unit_id}/details', [UnitDetailController::class, 'create']);
+Route::put('/unit/{unit_id}/details/{id}', [UnitDetailController::class, 'update']);
+Route::delete('/unit/{unit_id}/details/{id}', [UnitDetailController::class, 'remove']);
