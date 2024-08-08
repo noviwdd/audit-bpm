@@ -1135,9 +1135,9 @@ class QuestionsHelper {
                     'choices' => [
                         '0' => 'UPPS tidak melakukan analisis capaian kinerja.',
                         '1' => "UPPS telah melakukan analisis capaian kinerja yang: \n1) Analisisnya tidak sepenuhnya didukung oleh data/informasi yang relevan (merujuk pada pencapaian standar mutu perguruan tinggi) dan berkualitas (andal dan memadai), \n2) Konsisten dengan sebagian kecil (kurang dari 5) kriteria yang diuraikan sebelumnya, \n3) Analisisnya dilakukan tidak secara komprehensif untuk mengidentifikasi akar masalah di UPPS, 4) hasilnya tidak dipublikasikan.",
-                        '2' => '',
-                        '3' => '',
-                        '4' => '',
+                        '2' => "UPPS telah melakukan analisis capaian kinerja yang: \n1) analisisnya didukung oleh data/informasi yang relevan (merujuk pada pencapaian standar mutu perguruan tinggi) dan berkualitas (andal dan memadai), \n2) konsisten dengan sebagian (5 s.d. 6) kriteria yang diuraikan sebelumnya, \n3) analisisnya dilakukan secara komprehensif untuk mengidentifikasi akar masalah di UPPS, \n4) hasilnya dipublikasikan kepada para pemangku kepentingan internal.",
+                        '3' => "UPPS telah melakukan analisis capaian kinerja yang: \n1) analisisnya didukung oleh data/informasi yang relevan (merujuk pada pencapaian standar mutu perguruan tinggi) dan berkualitas (andal dan memadai) yang didukung oleh keberadaan pangkalan data institusi yang belum terintegrasi, \n2) konsisten dengan sebagian besar (7 s.d. 8) kriteria yang diuraikan sebelumnya, \n3) analisisnya dilakukan secara komprehensif dan tepat untuk mengidentifikasi akar masalah di UPPS, \n4) hasilnya dipublikasikan kepada para pemangku kepentingan internal serta mudah diakses.",
+                        '4' => "UPPS telah melakukan analisis capaian kinerja yang: \n1) analisisnya didukung oleh data/informasi yang relevan (merujuk pada pencapaian standar mutu perguruan tinggi) dan berkualitas (andal dan memadai) yang didukung oleh keberadaan pangkalan data institusi yang terintegrasi. \n2) konsisten dengan seluruh kriteria yang diuraikan sebelumnya, \n3) analisisnya dilakukan secara komprehensif, tepat, dan tajam untuk mengidentifikasi akar masalah di UPPS. \n4) hasilnya dipublikasikan kepada para pemangku kepentingan internal dan eksternal serta mudah diakses",
                     ]
                 ]
             ],
@@ -1146,13 +1146,13 @@ class QuestionsHelper {
                 [
                     'code' => 'D.2',
                     'type' => 'option',
-                    'question' => '',
+                    'question' => 'Ketepatan analisis SWOT atau analisis yang relevan di dalam mengembangkan strategi',
                     'choices' => [
-                        '0' => '',
-                        '1' => '',
-                        '2' => '',
-                        '3' => '',
-                        '4' => '',
+                        '0' => 'UPPS tidak melakukan analisis untuk mengembangkan strategi',
+                        '1' => "UPPS melakukan analisis SWOT atau analisis lain yang memenuhi aspek-aspek sebagai berikut: \n1) melakukan identifikasi kekuatan atau faktor pendorong, kelemahan atau faktor penghambat, peluang dan ancaman yang dihadapi UPPS \n2) memiliki keterkaitan dengan hasil analisis capaian kinerja, namun tidak terstruktur dan tidak sistematis",
+                        '2' => "UPPS melakukan analisis SWOT atau analisis lain yang relevan, serta memenuhi aspek-aspek sebagai berikut: \n1) melakukan identifikasi kekuatan atau faktor pendorong, kelemahan atau faktor penghambat, peluang dan ancaman yang dihadapi UPPS dilakukan secara tepat, \n2) memiliki keterkaitan dengan hasil analisis capaian kinerja.",
+                        '3' => "UPPS melakukan analisis SWOT atau analisis lain yang relevan, serta memenuhi aspek-aspek sebagai berikut: \n1) melakukan identifikasi kekuatan atau faktor pendorong, kelemahan atau faktor penghambat, peluang dan ancaman yang dihadapi UPPS dilakukan secara tepat, \n2) memiliki keterkaitan dengan hasil analisis capaian kinerja, \n3) merumuskan strategi pengembangan UPPS yang berkesesuaian",
+                        '4' => "UPPS melakukan analisis SWOT atau analisis lain yang relevan, serta memenuhi aspek-aspek sebagai berikut: \n1) melakukan identifikasi kekuatan atau faktor pendorong, kelemahan atau faktor penghambat, peluang dan ancaman yang dihadapi UPPS dilakukan secara tepat, \n2) memiliki keterkaitan dengan hasil analisis capaian kinerja, \n3) merumuskan strategi pengembangan UPPS yang berkesesuaian, \n4) menghasilkan program-program pengembangan alternatif yang tepat.",
                     ]
                 ]
             ],
@@ -1161,13 +1161,13 @@ class QuestionsHelper {
                 [
                     'code' => 'D.3',
                     'type' => 'option',
-                    'question' => '',
+                    'question' => 'Ketepatan di dalam menetapkan prioritas program pengembangan.',
                     'choices' => [
-                        '0' => '',
-                        '1' => '',
-                        '2' => '',
-                        '3' => '',
-                        '4' => '',
+                        '0' => 'UPPS tidak menetapkan prioritas program pengembangan.',
+                        '1' => "UPPS menetapkan prioritas program pengembangan namun belum mempertimbangan secara komprehensif: \n1) kapasitas UPPS, \n2) kebutuhan UPPS dan PS, \n3) rencana strategis UPPS yang berlaku",
+                        '2' => "UPPS menetapkan prioritas program pengembangan berdasarkan hasil analisis SWOT atau analisis lainnya yang mempertimbangkan secara komprehensif: \n1) kapasitas UPPS, \n2) kebutuhan UPPS dan PS di masa depan, \n3) rencana strategis UPPS yang berlaku",
+                        '3' => "UPPS menetapkan prioritas program pengembangan berdasarkan hasil analisis SWOT atau analisis lainnya yang mempertimbangkan secara komprehensif: \n1) kapasitas UPPS, \n2) kebutuhan UPPS dan PS di masa depan, \n3) rencana strategis UPPS yang berlaku, \n4) aspirasi dari pemangku kepentingan internal.",
+                        '4' => "UPPS menetapkan prioritas program pengembangan berdasarkan hasil analisis SWOT atau analisis lainnya yang mempertimbangkan secara komprehensif: \n1) kapasitas UPPS, \n2) kebutuhan UPPS dan PS di masa depan, \n3) rencana strategis UPPS yang berlaku, \n4) aspirasi dari pemangku kepentingan internal dan eksternal, serta 5) program yang menjamin keberlanjutan",
                     ]
                 ]
             ],
@@ -1176,13 +1176,13 @@ class QuestionsHelper {
                 [
                     'code' => 'D.4',
                     'type' => 'option',
-                    'question' => '',
+                    'question' => 'UPPS memiliki kebijakan, ketersediaan sumberdaya, kemampuan melaksanakan, dan kerealistikan program.',
                     'choices' => [
-                        '0' => '',
-                        '1' => '',
-                        '2' => '',
-                        '3' => '',
-                        '4' => '',
+                        '0' => 'UPPS tidak memiliki kebijakan dan upaya untuk menjamin keberlanjutan program.',
+                        '1' => 'UPPS memiliki kebijakan dan upaya namun belum cukup untuk menjamin keberlanjutan program.',
+                        '2' => "UPPS memiliki kebijakan dan upaya untuk menjamin keberlanjutan program yang mencakup: \n1) alokasi sumber daya, \n2) kemampuan melaksanakan program pengembangan, \n3) rencana penjaminan mutu yang berkelanjutan.",
+                        '3' => "UPPS memiliki kebijakan dan upaya yang diturunkan ke dalam berbagai peraturan untuk menjamin keberlanjutan program yang mencakup: \n1) alokasi sumber daya, \n2) kemampuan melaksanakan program pengembangan, \n3) rencana penjaminan mutu yang berkelanjutan.",
+                        '4' => "UPPS memiliki kebijakan dan upaya yang diturunkan ke dalam berbagai peraturan untuk menjamin keberlanjutan program yang mencakup: \n1) alokasi sumber daya, \n2) kemampuan melaksanakan program pengembangan, \n3) rencana penjaminan mutu yang berkelanjutan, \n4) keberadaan dukungan pemangku kepentingan eksternal",
                     ]
                 ]
             ]

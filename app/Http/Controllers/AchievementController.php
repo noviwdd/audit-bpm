@@ -35,12 +35,6 @@ class AchievementController extends Controller
         $answers = Achievement::get()->keyBy('question_id');
         $target = Target::get()->keyBy('question_id');
 
-        $answeredCount = $answers->filter(function ($answer, $key) use ($question, $currentCriteria) {
-            return $question[$currentCriteria]->contains(function ($question) use ($key) {
-                return strpos($key, $question['code']) === 0;
-            });
-        })->count();
-
         return view('question.achievement', [
             'questions' => $question[$currentCriteria],
             'currentCriteria' => $currentCriteria,
@@ -49,7 +43,6 @@ class AchievementController extends Controller
             'currentIndex' => $index,
             'answers' => $answers,
             'target' => $target,
-            'answeredCount' => $answeredCount
         ]);
     }
 
@@ -90,7 +83,15 @@ class AchievementController extends Controller
             }
         }
 
-        $nextIndex = $request->input('currentIndex') + 1;
-        return redirect()->route('achievement.index', ['index' => $nextIndex]);
+        $currentIndex = $request->input('currentIndex');
+        $criteriaCount = count(collect($this->questionsHelper->flattenQuestions())->groupBy('criteria')->keys()->all());
+
+        // Jika currentIndex adalah halaman terakhir, tetap di halaman yang sama
+        if ($currentIndex < $criteriaCount - 1) {
+            $nextIndex = $currentIndex + 1;
+            return redirect()->route('achievement.index', ['index' => $nextIndex]);
+        } else {
+            return redirect()->route('achievement.index', ['index' => $currentIndex])->with('success', 'Data berhasil disimpan');
+        }
     }
 }

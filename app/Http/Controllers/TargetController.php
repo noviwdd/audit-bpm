@@ -82,7 +82,15 @@ class TargetController extends Controller
             }
         }
 
-        $nextIndex = $request->input('currentIndex') + 1;
-        return redirect()->route('target.index', ['index' => $nextIndex]);
+        $currentIndex = $request->input('currentIndex');
+        $criteriaCount = count(collect($this->questionsHelper->flattenQuestions())->groupBy('criteria')->keys()->all());
+
+        // Jika currentIndex adalah halaman terakhir, tetap di halaman yang sama
+        if ($currentIndex < $criteriaCount - 1) {
+            $nextIndex = $currentIndex + 1;
+            return redirect()->route('target.index', ['index' => $nextIndex]);
+        } else {
+            return redirect()->route('target.index', ['index' => $currentIndex])->with('success', 'Data berhasil disimpan!');
+        }
     }
 }

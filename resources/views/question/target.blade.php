@@ -9,8 +9,14 @@
     <form method="POST" action="{{ route('target.save') }}">
         @csrf
         <ul>
-            <div class="px-6 py-3 m-2 my-4 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <p class="font-bold">{{ $currentCriteria }}</p>
+            <div class="px-6 py-3 m-2 my-4 bg-white border border-gray-200 rounded-lg shadow">
+                <select id="navigateIndex" class="w-full border-0 focus:ring-0 font-bold">
+                    @foreach($criteriaKeys as $index => $criteria)
+                        <option value="{{ $index }}" {{ $currentIndex == $index ? 'selected' : '' }}>
+                            {{ $criteria }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
             @foreach ($questions as $question)
                 <div class="p-6 m-2 my-4 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
@@ -72,8 +78,13 @@
             @if ($currentIndex < count($criteriaKeys) - 1)
                 <button type="submit" class="px-3 py-2 text-sm font-medium text-center inline-flex items-center text-white bg-teal rounded-lg hover:bg-teal">Selanjutnya</button>
             @endif
+            @if ($currentIndex == count($criteriaKeys) - 1)
+                <button type="submit" class="px-3 py-2 text-sm font-medium text-center inline-flex items-center text-white bg-teal rounded-lg hover:bg-teal">Simpan</button>
+            @endif
         </div>
         <input type="hidden" name="currentIndex" value="{{ $currentIndex }}">
     </form>
+
+    @include('question.question-script')
 @endsection
 

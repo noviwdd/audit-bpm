@@ -19,7 +19,7 @@
                         <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
                         <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
                     </svg>
-                    <span class="ml-3">Overview</span>
+                    <span class="ml-3">Dashboard</span>
                 </a>
             </li>
             <li>
@@ -30,10 +30,10 @@
                         class="flex-shrink-0 w-5 h-5 text-white transition duration-75 group-hover:text-jet dark:text-gray-400 dark:group-hover:text-jet"
                         fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd"
-                            d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+                            d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z"
                             clip-rule="evenodd"></path>
                     </svg>
-                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Pages</span>
+                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Pengukuran Mutu</span>
                     <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
                         xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd"
@@ -43,16 +43,12 @@
                 </button>
                 <ul id="dropdown-pages" class="hidden py-2 space-y-2">
                     <li>
-                        <a href="#"
-                            class="flex items-center p-2 pl-11 w-full text-sm font-medium text-white rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700">Settings</a>
+                        <a href="{{ url('/target') }}"
+                            class="flex items-center p-2 pl-11 w-full text-sm font-medium text-white rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700">Form Target</a>
                     </li>
                     <li>
-                        <a href="#"
-                            class="flex items-center p-2 pl-11 w-full text-sm font-medium text-white rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700">Kanban</a>
-                    </li>
-                    <li>
-                        <a href="#"
-                            class="flex items-center p-2 pl-11 w-full text-sm font-medium text-white rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700">Calendar</a>
+                        <a href="{{ url('/capaian') }}"
+                            class="flex items-center p-2 pl-11 w-full text-sm font-medium text-white rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700">Form Capaian</a>
                     </li>
                 </ul>
             </li>
@@ -64,10 +60,10 @@
                         class="flex-shrink-0 w-5 h-5 text-white transition duration-75 group-hover:text-jet dark:text-gray-400 dark:group-hover:text-jet"
                         fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd"
-                            d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z"
+                            d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
                             clip-rule="evenodd"></path>
                     </svg>
-                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Sales</span>
+                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Laporan</span>
                     <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
                         xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd"
@@ -77,20 +73,16 @@
                 </button>
                 <ul id="dropdown-sales" class="hidden py-2 space-y-2">
                     <li>
-                        <a href="#"
-                            class="flex items-center p-2 pl-11 w-full text-sm font-medium text-white rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700">Products</a>
+                        <a href="{{ url('skor') }}"
+                            class="flex items-center p-2 pl-11 w-full text-sm font-medium text-white rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700">Hasil Penilaian Mutu</a>
                     </li>
                     <li>
-                        <a href="#"
-                            class="flex items-center p-2 pl-11 w-full text-sm font-medium text-white rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700">Billing</a>
-                    </li>
-                    <li>
-                        <a href="#"
-                            class="flex items-center p-2 pl-11 w-full text-sm font-medium text-white rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700">Invoice</a>
+                        <a href="{{ url('/grafik') }}"
+                            class="flex items-center p-2 pl-11 w-full text-sm font-medium text-white rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700">Peta Capaian</a>
                     </li>
                 </ul>
             </li>
-            <li>
+            {{--  <li>
                 <a href="#"
                     class="flex items-center p-2 text-sm font-medium text-white rounded-lg dark:text-white hover:bg-gray-100 hover:text-jet dark:hover:bg-gray-700 group">
                     <svg aria-hidden="true"
@@ -109,7 +101,7 @@
                         4
                     </span>
                 </a>
-            </li>
+            </li>  --}}
             <li>
                 <button type="button"
                     class="flex items-center p-2 w-full text-sm font-medium text-white rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700"
@@ -121,7 +113,7 @@
                             d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
                             clip-rule="evenodd"></path>
                     </svg>
-                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Authentication</span>
+                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Manajemen Data</span>
                     <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
                         xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd"
@@ -132,23 +124,16 @@
                 <ul id="dropdown-authentication" class="hidden py-2 space-y-2">
                     <li>
                         <a href="#"
-                            class="flex items-center p-2 pl-11 w-full text-sm font-medium text-white rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700">Sign
-                            In</a>
+                            class="flex items-center p-2 pl-11 w-full text-sm font-medium text-white rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700">Unit</a>
                     </li>
                     <li>
                         <a href="#"
-                            class="flex items-center p-2 pl-11 w-full text-sm font-medium text-white rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700">Sign
-                            Up</a>
-                    </li>
-                    <li>
-                        <a href="#"
-                            class="flex items-center p-2 pl-11 w-full text-sm font-medium text-white rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700">Forgot
-                            Password</a>
+                            class="flex items-center p-2 pl-11 w-full text-sm font-medium text-white rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700">User</a>
                     </li>
                 </ul>
             </li>
         </ul>
-        <ul class="pt-5 mt-5 space-y-2 border-t border-gray-200 dark:border-gray-700">
+        {{--  <ul class="pt-5 mt-5 space-y-2 border-t border-gray-200 dark:border-gray-700">
             <li>
                 <a href="#"
                     class="flex items-center p-2 text-sm font-medium text-white rounded-lg transition duration-75 hover:bg-gray-100 hover:text-jet dark:hover:bg-gray-700 dark:text-white group">
@@ -189,6 +174,6 @@
                     <span class="ml-3">Help</span>
                 </a>
             </li>
-        </ul>
+        </ul>  --}}
     </div>
 </aside>

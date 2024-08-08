@@ -176,6 +176,10 @@ class FormulasHelper
             'questions' => ['IBIK-STD-05.3']
         ],
 
+        'formula23' => [
+            'questions' => ['IBIK-STD-05.4']
+        ],
+
         'formula24' => [
             'questions' => [
                 ['IBIK-STD-06.1A', 'IBIK-STD-06.1B', 'IBIK-STD-06.1C'],

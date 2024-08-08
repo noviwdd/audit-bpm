@@ -25,15 +25,97 @@ class FormulasController extends Controller
 
     public function index()
     {
-        $weightedScore = $this->weightedScore();
+        // generate score
+        $this->generate();
+
+        $questions = collect($this->question->flattenQuestions());
+        $questionCode = $questions->pluck('code');
         $predAccreditation = $this->predAccreditation();
         $score = Score::where('unit_id', 1)->get()->keyBy('question_id');
-        // return $score['IBIK-STD-02.4A']->target_score;
+
+        $displayedCodes = [];
+        $tableData = [];
+        $totalTerlampaui = 0;
+        $totalTercapai = 0;
+        $totalTidakTercapai = 0;
+
+        foreach ($questionCode as $code) {
+            $shortCode = preg_replace('/[A-Z]$/', '', $code);
+
+            if (!in_array($code, $displayedCodes)) {
+                $displayedCodes[] = $code;
+                $targetScore = $score[$code]->target_score ?? 0;
+                $achieveScore = $score[$code]->achieve_score ?? 0;
+                $predValue = $predAccreditation[0][$shortCode] ?? 'N/A';
+
+                $sebutan = '';
+                if ($achieveScore == 4) {
+                    $sebutan = 'Sangat Baik';
+                    $sebutanClass = 'bg-caribbean';
+                } elseif ($achieveScore >= 3) {
+                    $sebutan = 'Baik';
+                    $sebutanClass = 'bg-caribbean/75';
+                } elseif ($achieveScore >= 2) {
+                    $sebutan = 'Cukup';
+                    $sebutanClass = 'bg-amber';
+                } elseif ($achieveScore >= 1) {
+                    $sebutan = 'Kurang';
+                    $sebutanClass = 'bg-[#FF9800]';
+                } elseif ($achieveScore >= 0) {
+                    $sebutan = 'Sangat Kurang';
+                    $sebutanClass = 'bg-[#D32F2F]';
+                } else {
+                    $sebutan = '';
+                    $sebutanClass = '';
+                }
+
+                $ketercapaian = '';
+                if ($targetScore > $achieveScore) {
+                    $ketercapaian = 'Tidak Tercapai';
+                    $ketercapaianClass = 'bg-[#D32F2F]';
+                    $totalTidakTercapai++;
+                } elseif ($targetScore == $achieveScore) {
+                    $ketercapaian = 'Tercapai';
+                    $ketercapaianClass = 'bg-blue-800/75';
+                    $totalTercapai++;
+                } elseif ($targetScore < $achieveScore) {
+                    $ketercapaian = 'Terlampaui';
+                    $ketercapaianClass = 'bg-caribbean';
+                    $totalTerlampaui++;
+                } else {
+                    $ketercapaian = '';
+                    $ketercapaianClass = '';
+                }
+
+                $questionData = $questions->firstWhere('code', $code);
+                $questionText = $questionData['question'] ?? 'N/A';
+                $mainQuestion = isset($questionData['question']['main']) ? $questionData['question']['main'] : $questionText;
+
+
+                $tableData[] = [
+                    'code' => $code,
+                    'question' => $mainQuestion,
+                    'target_score' => number_format($targetScore, 2),
+                    'achieve_score' => number_format($achieveScore, 2),
+                    'sebutan' => $sebutan,
+                    'sebutan_class' => $sebutanClass,
+                    'ketercapaian' => $ketercapaian,
+                    'ketercapaian_class' => $ketercapaianClass,
+                    'pred_value' => number_format((float)$predValue, 2)
+                ];
+            }
+        }
+
+        $totalData = count($tableData);
+        $persentaseTerlampaui = $totalData ? ($totalTerlampaui / $totalData) * 100 : 0;
+        $persentaseTercapai = $totalData ? ($totalTercapai / $totalData) * 100 : 0;
+        $persentaseTidakTercapai = $totalData ? ($totalTidakTercapai / $totalData) * 100 : 0;
 
         return view('results.score')->with([
-            'weightedScore' => $weightedScore,
-            'predAccreditation' => $predAccreditation,
-            'score' => $score
+            'tableData' => $tableData,
+            'persentaseTerlampaui' => number_format($persentaseTerlampaui, 2),
+            'persentaseTercapai' => number_format($persentaseTercapai, 2),
+            'persentaseTidakTercapai' => number_format($persentaseTidakTercapai, 2)
         ]);
     }
 
@@ -60,8 +142,8 @@ class FormulasController extends Controller
                     'question_id' => $key,
                 ],
                 [
-                    'target_score' => $targetValue,
-                    'achieve_score' => $achieveValue
+                    'target_score' => $targetValue ?? null,
+                    'achieve_score' => $achieveValue ?? null
                 ]);
         }
 
@@ -419,7 +501,7 @@ class FormulasController extends Controller
         $groupAnswer = [];
         foreach ($formula16Answers as $questionCode => $formula) {
             $varKey = substr($questionCode, strrpos($questionCode, '-') + 1);
-            $groupAnswer[$varKey] = $formula['target_answer'];
+            $groupAnswer[$varKey] = $formula['target_answer'] ?? $formula['achieve_answer'];
         }
         $results['IBIK-STD-04.12'] = $this->formula16($groupAnswer);
 
@@ -432,17 +514,29 @@ class FormulasController extends Controller
         $groupAnswer = [];
         foreach ($formula17Answers as $questionCode => $formula) {
             $varKey = substr($questionCode, strrpos($questionCode, '-') + 1);
-            $groupAnswer[$varKey] = $formula['target_answer'];
+            $groupAnswer[$varKey] = $formula['target_answer'] ?? $formula['achieve_answer'];
         }
         $results['IBIK-STD-04.13'] = $this->formula17($groupAnswer);
 
         // Formula 18
-        // $formula17Answers = collect($answers)->filter(function ($item) use ($formulas) {
-        //     $item = collect($item);
-        //     return Str::contains($item->get('question_id'), Arr::get($formulas, 'formula17'));
-        // });
+        $formula18Answers = collect($answers)->filter(function ($item) use ($formulas) {
+            $item = collect($item);
+            return Str::contains($item->get('question_id'), Arr::get($formulas, 'formula18'));
+        });
 
-        // return $results['IBIK-STD-04.1'];
+        foreach ($formula18Answers as $formula) {
+            $valueA = $formula['target_answer'] ?? $formula['achieve_answer'];
+
+            $hasil41 = $results['IBIK-STD-04.1'] ?? 0;
+            $hasil42 = $results['IBIK-STD-04.2'] ?? 0;
+            $hasil43 = $results['IBIK-STD-04.3'] ?? 0;
+            $hasil44 = $results['IBIK-STD-04.4'] ?? 0;
+            $hasil45 = $results['IBIK-STD-04.5'] ?? 0;
+            $hasil46 = $results['IBIK-STD-04.6'] ?? 0;
+            $hasil47 = $results['IBIK-STD-04.7'] ?? 0;
+
+            $results['IBIK-STD-04.14'] = $this->formula18($hasil41, $hasil42, $hasil43, $hasil44, $hasil45, $hasil46, $hasil47, $valueA);
+        }
 
         // Formula 19
         $formula19Answers = collect($answers)->filter(function ($item) use ($formulas) {
@@ -501,6 +595,27 @@ class FormulasController extends Controller
             $groupAnswer[$varKey] = $formula['target_answer'] ?? $formula['achieve_answer'];
         }
         $results['IBIK-STD-05.3'] = $this->formula22($groupAnswer);
+
+        // Formula 23
+        $formula23Answers = collect($answers)->filter(function ($item) use ($formulas) {
+            $item = collect($item);
+            return Str::contains($item->get('question_id'), Arr::get($formulas, 'formula23'));
+        });
+
+        foreach ($formula23Answers as $formula) {
+            $valueA = $formula['target_answer'] ?? $formula['achieve_answer'];
+
+            $hasil41 = $results['IBIK-STD-04.1'] ?? 0;
+            $hasil42 = $results['IBIK-STD-04.2'] ?? 0;
+            $hasil43 = $results['IBIK-STD-04.3'] ?? 0;
+            $hasil44 = $results['IBIK-STD-04.4'] ?? 0;
+            $hasil45 = $results['IBIK-STD-04.5'] ?? 0;
+            $hasil46 = $results['IBIK-STD-04.6'] ?? 0;
+            $hasil47 = $results['IBIK-STD-04.7'] ?? 0;
+            $hasil56 = $results['IBIK-STD-05.6'] ?? 0;
+
+            $results['IBIK-STD-05.4'] = $this->formula23($hasil41, $hasil42, $hasil43, $hasil44, $hasil45, $hasil46, $hasil47, $hasil56, $valueA);
+        }
 
         // Formula 24
         $formula24Answers = collect($answers)->filter(function ($item) use ($formulas) {
@@ -1144,9 +1259,16 @@ class FormulasController extends Controller
         return $skor;
     }
 
-    public function formula18($values)
+    public function formula18($a, $b, $c, $d, $e, $f, $g, $value_a)
     {
+        $avg = ($a + $b + $c + $d + $e + $f + $g)/7;
 
+
+        if ($avg >= 3.5) {
+            return 4;
+        } else {
+            return $value_a;
+        }
     }
 
     public function formula19($value_a, $value_b)
@@ -1199,10 +1321,16 @@ class FormulasController extends Controller
         return $skor;
     }
 
-    // public function formula23($values)
-    // {
+    public function formula23($a, $b, $c, $d, $e, $f, $g, $h, $value_a)
+    {
+        $avg = ($a + $b + $c + $d + $e + $f + $g + $h)/8;
 
-    // }
+        if ($avg >= 3.5) {
+            return 4;
+        } else {
+            return $value_a;
+        }
+    }
 
     public function formula24($value_a, $value_b, $value_c)
     {
