@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AchievementController;
 use App\Http\Controllers\FormulasController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ManagementUnitController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\TargetController;
@@ -10,6 +11,9 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
+
+Route::get('login', [LoginController::class, 'view']);
+Route::post('login', [LoginController::class, 'authenticate']);
 
 Route::get('/target', [TargetController::class, 'index'])->name('target.index');
 Route::post('/target', [TargetController::class, 'save'])->name('target.save');
