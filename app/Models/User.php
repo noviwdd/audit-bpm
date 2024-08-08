@@ -25,4 +25,9 @@ class User extends Authenticatable
         'unit_id',
         'role_id'
     ];
+
+    public function units()
+    {
+        return $this->belongsToMany(Unit::class);
+    }
 }

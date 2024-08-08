@@ -30,7 +30,7 @@
                                 <button data-modal-target="edit-modal-{{ $item->id }}"
                                     data-modal-toggle="edit-modal-{{ $item->id }}"
                                     class="px-4 py-2 text-sm text-center font-medium inline-flex items-center rounded-md bg-teal text-white hover:bg-white hover:text-teal hover:border hover:border-teal">Edit</button>
-                                <form action="{{ route('management-unit.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus unit ini?');">
+                                <form action="{{ route('management-user.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus unit ini?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
@@ -62,13 +62,26 @@
                                 </div>
                                 <div class="p-4 md:p-5">
                                     <form class="space-y-4"
-                                        action="{{ route('management-unit.store', ['id' => $item->id]) }}" method="POST">
+                                        action="{{ route('management-user.store', ['id' => $item->id]) }}" method="POST">
                                         @csrf
                                         <div>
                                             <label for="name"
-                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama
-                                                Unit</label>
+                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama</label>
                                             <input type="text" name="name" id="name" value="{{ $item->name }}"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                required />
+                                        </div>
+                                        <div>
+                                            <label for="email"
+                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+                                            <input type="text" name="email" id="email" value="{{ $item->email }}"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                required />
+                                        </div>
+                                        <div>
+                                            <label for="email"
+                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Unit</label>
+                                            <input type="text" name="email" id="email" value="{{ $item->email }}"
                                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                                                 required />
                                         </div>
@@ -107,7 +120,7 @@
                 </div>
                 <!-- Modal body -->
                 <div class="p-4 md:p-5">
-                    <form class="space-y-4" action="{{ route('management-unit.store', ['id' => request('id')]) }}"
+                    <form class="space-y-4" action="{{ route('management-user.store', ['id' => request('id')]) }}"
                         method="POST">
                         @csrf
                         <div>

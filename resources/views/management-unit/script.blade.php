@@ -20,4 +20,28 @@
         })
     })
 
+    function openModal(action, id = null, name = null) {
+        const modalTitle = document.getElementById('modal-title');
+        const unitForm = document.getElementById('unit-form');
+        const nameInput = document.getElementById('name');
+
+        if (action === 'add') {
+            modalTitle.textContent = 'Tambah Data Unit';
+            unitForm.action = "{{ route('management-unit.store') }}";
+            nameInput.value = '';
+        } else if (action === 'edit') {
+            modalTitle.textContent = 'Edit Data Unit';
+            unitForm.action = `{{ route('management-unit.store') }}/${id}`;
+            nameInput.value = name;
+        }
+
+        document.querySelectorAll('[data-modal-hide="unit-modal"]').forEach(element => {
+            element.addEventListener('click', () => {
+                document.getElementById('unit-modal').classList.add('hidden');
+            });
+        });
+
+        document.getElementById('unit-modal').classList.remove('hidden');
+    }
+
 </script>

@@ -25,7 +25,7 @@ class ManagementUnitController extends Controller
             ]
         );
 
-        return redirect()->route('management-unit.index');
+        return redirect()->back();
     }
 
     public function destroy($id)
