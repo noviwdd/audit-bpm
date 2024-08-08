@@ -4,6 +4,7 @@ use App\Http\Controllers\AchievementController;
 use App\Http\Controllers\FormulasController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ManagementUnitController;
+use App\Http\Controllers\ManagementUserController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\TargetController;
 use Illuminate\Support\Facades\Route;
@@ -29,3 +30,9 @@ Route::get('/management-unit/{id?}', [ManagementUnitController::class, 'view']);
 Route::post('/management-unit', [ManagementUnitController::class, 'create']);
 Route::put('/management-unit/{id}', [ManagementUnitController::class, 'update']);
 Route::delete('/management-unit/{id}', [ManagementUnitController::class, 'remove']);
+
+// Management User
+Route::get('/management-user/{id?}', [ManagementUserController::class, 'view']);
+Route::post('/management-user', [ManagementUserController::class, 'create']);
+Route::put('/management-user/{id}', [ManagementUserController::class, 'update']);
+Route::delete('/management-user/{id}', [ManagementUserController::class, 'remove']);
