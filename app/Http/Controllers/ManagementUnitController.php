@@ -14,10 +14,10 @@ class ManagementUnitController extends Controller
 
     protected $service, $model;
     protected $permission = [
-        "create" => "can_create_account",
-        "view" => "can_view_account",
-        "update" => "can_update_account",
-        "delete" => "can_delete_account",
+        "create" => "can_create_management_units",
+        "view" => "can_view_management_units",
+        "update" => "can_update_management_units",
+        "delete" => "can_delete_management_units",
     ];
 
     public function __construct(ManagementUnit $model, ManagementUnitService $service)
