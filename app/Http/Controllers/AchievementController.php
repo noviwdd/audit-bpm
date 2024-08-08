@@ -32,8 +32,8 @@ class AchievementController extends Controller
             return $questions->count();
         });
 
-        $answers = Achievement::get()->keyBy('question_id');
-        $target = Target::get()->keyBy('question_id');
+        $answers = Achievement::where('unit_id', Auth::user()->unit_id)->get()->keyBy('question_id');
+        $target = Target::where('unit_id', Auth::user()->unit_id)->get()->keyBy('question_id');
 
         return view('question.achievement', [
             'questions' => $question[$currentCriteria],
@@ -58,7 +58,7 @@ class AchievementController extends Controller
                         if ($subAnswer !== null) {
                             Achievement::updateOrCreate(
                                 [
-                                    'user_id' => $userId,
+                                    'unit_id' => Auth::user()->unit_id,
                                     'question_id' => $questionId . '-' . $subKey
                                 ],
                                 [
@@ -71,7 +71,7 @@ class AchievementController extends Controller
                     if ($answer !== null) {
                         Achievement::updateOrCreate(
                             [
-                                'user_id' => $userId,
+                                'unit_id' => Auth::user()->unit_id,
                                 'question_id' => $questionId
                             ],
                             [

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\QuestionsHelper;
 use App\Models\Score;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class GraphController extends Controller
 {
@@ -18,7 +19,7 @@ class GraphController extends Controller
     public function index()
     {
         $allQuestions = collect($this->questionsHelper->flattenQuestions());
-        $scores = Score::where('unit_id', 1)->get()->keyBy('question_id');
+        $scores = Score::where('unit_id', Auth::user()->unit_id)->get()->keyBy('question_id');
         $groupedQuestions = $allQuestions->map(function ($item) use ($scores) {
             $questionId = $item['code'];
             return collect($item)

@@ -33,7 +33,7 @@ class TargetController extends Controller
             return $questions->count();
         });
 
-        $answers = Target::where('user_id', 1)->get()->keyBy('question_id');
+        $answers = Target::where('unit_id', Auth::user()->unit_id)->get()->keyBy('question_id');
 
         return view('question.target', [
             'questions' => $question[$currentCriteria],
@@ -48,7 +48,6 @@ class TargetController extends Controller
     public function save(Request $request)
     {
         $data = $request->all();
-        $userId = 1;
 
         if (isset($data['answers'])) {
             foreach ($data['answers'] as $questionId => $answer) {
@@ -57,7 +56,7 @@ class TargetController extends Controller
                         if ($subAnswer !== null) {
                             Target::updateOrCreate(
                                 [
-                                    'user_id' => $userId,
+                                    'unit_id' => Auth::user()->unit_id,
                                     'question_id' => $questionId . '-' . $subKey
                                 ],
                                 [
@@ -70,7 +69,7 @@ class TargetController extends Controller
                     if ($answer !== null) {
                         Target::updateOrCreate(
                             [
-                                'user_id' => $userId,
+                                'unit_id' => Auth::user()->unit_id,
                                 'question_id' => $questionId
                             ],
                             [

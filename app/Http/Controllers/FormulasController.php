@@ -31,7 +31,7 @@ class FormulasController extends Controller
         $questions = collect($this->question->flattenQuestions());
         $questionCode = $questions->pluck('code');
         $predAccreditation = $this->predAccreditation();
-        $score = Score::where('unit_id', 1)->get()->keyBy('question_id');
+        $score = Score::where('unit_id', Auth::user()->unit_id)->get()->keyBy('question_id');
 
         $displayedCodes = [];
         $tableData = [];
@@ -123,8 +123,8 @@ class FormulasController extends Controller
     {
         $formulas = $this->formula->getFormula();
 
-        $targetAnswers = Target::where('user_id', 1)->get()->keyBy('question_id');
-        $achieveAnswers = Achievement::where('user_id', 1)->get()->keyBy('question_id');
+        $targetAnswers = Target::where('unit_id', Auth::user()->unit_id)->get()->keyBy('question_id');
+        $achieveAnswers = Achievement::where('unit_id', Auth::user()->unit_id)->get()->keyBy('question_id');
 
         $targetResults = $this->processFormula($formulas, $targetAnswers);
         $achieveResults = $this->processFormula($formulas, $achieveAnswers);
@@ -138,7 +138,7 @@ class FormulasController extends Controller
             $achieveValue = Arr::get($achieveResults, $key);
             Score::updateOrCreate(
                 [
-                    'unit_id' => 1,
+                    'unit_id' => Auth::user()->unit_id,
                     'question_id' => $key,
                 ],
                 [
