@@ -18,8 +18,6 @@ use Illuminate\Support\Facades\Route;
 // });
 
 // Auth
-Route::get('/login', [AuthController::class, 'index']);
-
 Route::get('login', [LoginController::class, 'view']);
 Route::post('login', [LoginController::class, 'authenticate']);
 
@@ -36,7 +34,7 @@ Route::get('/skor', [FormulasController::class, 'index']);
 Route::get('/generate', [FormulasController::class, 'generate'])->name('formula.generate');
 
 // Graph
-Route::get('/grafik', [GraphController::class, 'index']);
+Route::get('/grafik', [GraphController::class, 'index'])->name('grafik.index');
 Route::get('/get-grafik-data', [GraphController::class, 'getChartData']);
 
 // Management Unit

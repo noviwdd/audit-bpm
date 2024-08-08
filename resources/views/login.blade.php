@@ -27,7 +27,7 @@
                                 placeholder="Password">
                         </div>
                     </div>
-                    <button>Masuk</button>
+                    <button type="submit">Masuk</button>
                 </form>
             </div>
         </div>
