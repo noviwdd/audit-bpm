@@ -1,9 +1,11 @@
 <?php
 namespace App\Utils;
 
-use App\Models\User;
 use Exception;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Diatria\LaravelInstant\Utils\Helper;
+use Diatria\LaravelInstant\Utils\ErrorException;
 
 class Permission
 {
