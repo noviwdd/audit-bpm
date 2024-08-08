@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Diatria\LaravelInstant\Models\Role;
 use Illuminate\Notifications\Notifiable;
 use Diatria\LaravelInstant\Models\RolePermission;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -29,5 +31,13 @@ class User extends Authenticatable
     public function units()
     {
         return $this->belongsToMany(Unit::class);
+    }
+
+    public function unit() {
+        return $this->belongsTo(Unit::class);
+    }
+
+    public function role() {
+        return $this->belongsTo(Role::class);
     }
 }
