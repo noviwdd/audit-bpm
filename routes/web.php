@@ -7,6 +7,7 @@ use App\Http\Controllers\ManagementUnitController;
 use App\Http\Controllers\ManagementUserController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\TargetController;
+use App\Http\Controllers\UnitController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -26,13 +27,19 @@ Route::get('/skor', [FormulasController::class, 'index']);
 Route::get('/generate', [FormulasController::class, 'generate'])->name('formula.generate');
 
 // Management Unit
-Route::get('/management-unit/{id?}', [ManagementUnitController::class, 'view']);
-Route::post('/management-unit', [ManagementUnitController::class, 'create']);
-Route::put('/management-unit/{id}', [ManagementUnitController::class, 'update']);
-Route::delete('/management-unit/{id}', [ManagementUnitController::class, 'remove']);
+Route::get('/management-units/{id?}', [ManagementUnitController::class, 'view']);
+Route::post('/management-units', [ManagementUnitController::class, 'create']);
+Route::put('/management-units/{id}', [ManagementUnitController::class, 'update']);
+Route::delete('/management-units/{id}', [ManagementUnitController::class, 'remove']);
 
 // Management User
-Route::get('/management-user/{id?}', [ManagementUserController::class, 'view']);
-Route::post('/management-user', [ManagementUserController::class, 'create']);
-Route::put('/management-user/{id}', [ManagementUserController::class, 'update']);
-Route::delete('/management-user/{id}', [ManagementUserController::class, 'remove']);
+Route::get('/management-users/{id?}', [ManagementUserController::class, 'view']);
+Route::post('/management-users', [ManagementUserController::class, 'create']);
+Route::put('/management-users/{id}', [ManagementUserController::class, 'update']);
+Route::delete('/management-users/{id}', [ManagementUserController::class, 'remove']);
+
+// Unit
+Route::get('/units/{id?}', [UnitController::class, 'view']);
+Route::post('/units', [UnitController::class, 'create']);
+Route::put('/units/{id}', [UnitController::class, 'update']);
+Route::delete('/units/{id}', [UnitController::class, 'remove']);
