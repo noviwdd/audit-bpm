@@ -22,44 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'unit_id',
         'role_id'
     ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-
-    public function permissions(): Attribute
-    {
-        return new Attribute(
-            get: function () {
-                return RolePermission::where("role_id", $this->role_id)
-                    ->join(
-                        "permissions",
-                        "role_permissions.permission_id",
-                        "permissions.id"
-                    )
-                    ->pluck("permissions.name");
-            }
-        );
-    }
 }

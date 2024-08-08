@@ -17,33 +17,37 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
+// Auth
 Route::get('/login', [AuthController::class, 'index']);
 
 Route::get('login', [LoginController::class, 'view']);
 Route::post('login', [LoginController::class, 'authenticate']);
 
-Route::get('/target', [TargetController::class, 'index'])->name('target.index');
-Route::post('/target', [TargetController::class, 'save'])->name('target.save');
-
+// Achievement
 Route::get('/capaian', [AchievementController::class, 'index'])->name('achievement.index');
 Route::post('/capaian', [AchievementController::class, 'save'])->name('achievement.save');
 
+// Target
+Route::get('/target', [TargetController::class, 'index'])->name('target.index');
+Route::post('/target', [TargetController::class, 'save'])->name('target.save');
+
+// Score
 Route::get('/skor', [FormulasController::class, 'index']);
 Route::get('/generate', [FormulasController::class, 'generate'])->name('formula.generate');
+
+// Graph
 Route::get('/grafik', [GraphController::class, 'index']);
 Route::get('/get-grafik-data', [GraphController::class, 'getChartData']);
 
 // Management Unit
-Route::get('/management-units/{id?}', [ManagementUnitController::class, 'view']);
-Route::post('/management-units', [ManagementUnitController::class, 'create']);
-Route::put('/management-units/{id}', [ManagementUnitController::class, 'update']);
-Route::delete('/management-units/{id}', [ManagementUnitController::class, 'remove']);
+Route::get('/manajemen-unit', [ManagementUnitController::class, 'index'])->name('management-unit.index');
+Route::post('/manajemen-unit/{id?}', [ManagementUnitController::class, 'store'])->name('management-unit.store');
+Route::delete('/manajemen-unit/{id}', [ManagementUnitController::class, 'destroy'])->name('management-unit.destroy');
 
 // Management User
-Route::get('/management-users/{id?}', [ManagementUserController::class, 'view']);
-Route::post('/management-users', [ManagementUserController::class, 'create']);
-Route::put('/management-users/{id}', [ManagementUserController::class, 'update']);
-Route::delete('/management-users/{id}', [ManagementUserController::class, 'remove']);
+Route::get('/manajemen-pengguna', [ManagementUserController::class, 'index']);
+Route::get('/manajemen-pengguna/form', [ManagementUserController::class, 'create']);
+
 
 // Unit
 Route::get('/units/{id?}', [UnitController::class, 'view']);

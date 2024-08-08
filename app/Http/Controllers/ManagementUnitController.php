@@ -2,39 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Utils\Permission;
 use Illuminate\Http\Request;
 use App\Models\ManagementUnit;
-use App\Services\ManagementUnitService;
-use Diatria\LaravelInstant\Traits\InstantControllerTrait;
+use App\Models\Unit;
 
 class ManagementUnitController extends Controller
 {
-    use InstantControllerTrait;
-
-    protected $service, $model;
-    protected $permission = [
-        "create" => "can_create_management_units",
-        "view" => "can_view_management_units",
-        "update" => "can_update_management_units",
-        "delete" => "can_delete_management_units",
-    ];
-
-    public function __construct(ManagementUnit $model, ManagementUnitService $service)
+    public function index()
     {
-        $this->model = $model;
-        $this->service = $service->initModel($model);
+        $data = Unit::all();
+        return view('management-unit.index', ['data' => $data]);
     }
 
-    public function  view(Request $request, int $id = null) {
-        (new Permission($this->permission ?? null))->can("view");
-        
-        if ($id) {
-            $data = $this->model->find($id);
-            return view('management-unit.index', [
-                'data' => $data
-            ]);
-        }
-        return view('management-unit.index');
+    public function store(Request $request, $id = null)
+    {
+        Unit::updateOrCreate(
+            [
+                'id' => $id
+            ],
+            [
+                'name' => $request->name
+            ]
+        );
+
+        return redirect()->route('management-unit.index');
+    }
+
+    public function destroy($id)
+    {
+        $unit = Unit::findOrFail($id);
+        $unit->delete();
+
+        return redirect()->route('management-unit.index');
     }
 }
