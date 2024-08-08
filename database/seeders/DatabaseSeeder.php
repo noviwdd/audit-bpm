@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
     {
         DB::table('users')->truncate();
         DB::table('roles')->truncate();
+        DB::table('role_permissions')->truncate();
+        DB::table('permissions')->truncate();
 
         $permissions = [
             'can_create_management_units',
@@ -49,20 +51,30 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        $role = Role::create([
-            'name' => 'Super Admin'
-        ]);
-
         User::create([
             'name' => 'Super Admin',
             'email' => 'superadmin@gmail.com',
             'password' => bcrypt(123456),
-            'role_id' => $role->id
+            'role_id' => Role::create(['name' => 'Super Admin'])->id
+        ]);
+
+        User::create([
+            'name' => 'Auditor',
+            'email' => 'auditor@gmail.com',
+            'password' => bcrypt(123456),
+            'role_id' => Role::create(['name' => 'Auditor'])->id
+        ]);
+        
+        User::create([
+            'name' => 'Unit',
+            'email' => 'unit@gmail.com',
+            'password' => bcrypt(123456),
+            'role_id' => Role::create(['name' => 'Unit'])->id
         ]);
 
         foreach (DB::table('permissions')->pluck('id') as $permissionID) {
             RolePermission::create([
-                'role_id' => $role->id,
+                'role_id' => 1,
                 'permission_id' => $permissionID
             ]);
         }
