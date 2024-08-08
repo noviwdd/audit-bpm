@@ -1,8 +1,8 @@
 @extends('layout.dashboard')
 @section('content')
-<form action="{{ $data ? '/management-unit/' . $data->id : '/management-unit' }}" method="POST">
+<form action="{{ isset($data) ? '/management-unit/' . $data->id : '/management-unit' }}" method="POST">
 	@csrf
-	@if ($data)
+	@if (isset($data))
 		@method('PUT')
 	@endif
 	<input type="text" name="target" value="{{ $data['target'] ?? null }}" placeholder="Target">
