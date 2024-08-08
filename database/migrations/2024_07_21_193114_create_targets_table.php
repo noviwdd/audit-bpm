@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('targets', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
-            $table->text('question_id');
-            $table->text('target_answer');
+            $table->integer('unit_id');
+            $table->string('question_id');
+            $table->decimal('target_answer', 17, 16);
             $table->timestamps();
         });
     }

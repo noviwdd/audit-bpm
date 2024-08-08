@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('achievements', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
+            $table->integer('unit_id');
             $table->text('question_id');
-            $table->text('achieve_answer');
+            $table->decimal('achieve_answer', 17, 16);
             $table->timestamps();
         });
     }
