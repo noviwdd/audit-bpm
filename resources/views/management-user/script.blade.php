@@ -27,11 +27,11 @@
 
         if (action === 'add') {
             modalTitle.textContent = 'Tambah Data User';
-            userForm.action = "{{ route('management-user.store') }}";
+            userForm.action = "{{ route('management-user.create') }}";
             nameInput.value = '';
         } else if (action === 'edit') {
             modalTitle.textContent = 'Edit Data User';
-            userForm.action = `{{ route('management-user.store') }}/${id}`;
+            userForm.action = `{{ url('/manajemen-pengguna') }}/${id}`;
             nameInput.value = name;
         }
 

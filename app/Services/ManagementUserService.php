@@ -49,11 +49,16 @@ class ManagementUserService {
 
     public function store(Collection $params)
     {
-        if ($params->has('password')) {
-            $params->put('password', bcrypt($params->get('password')));
-        } else {
+
+        if ($params->has('id') && $params->empty('password')) {
             $params->pull('password');
         }
-        return $this->storeTrait($params);
+
+        // Create
+        if (!$params->has('id') && $params->empty()) {
+            $params->put('password', env('PASSWORD_DEFAULT', 123456));
+        }
+        
+        $this->storeTrait($params);
     }
 }

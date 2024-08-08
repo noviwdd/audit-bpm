@@ -69,8 +69,9 @@
                                 </div>
                                 <div class="p-4 md:p-5">
                                     <form class="space-y-4"
-                                        action="{{ route('management-user.store', ['id' => $item->id]) }}" method="POST">
+                                        action="{{ route('management-user.update', ['id' => $item->id]) }}" method="POST">
                                         @csrf
+                                        @method('PUT')
                                         <div>
                                             <label for="name"
                                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama</label>
@@ -140,7 +141,7 @@
                 </div>
                 <!-- Modal body -->
                 <div class="p-4 md:p-5">
-                    <form class="space-y-4" action="{{ route('management-user.store', ['id' => request('id')]) }}"
+                    <form class="space-y-4" action="{{ route('management-user.create', ['id' => request('id')]) }}"
                         method="POST">
                         @csrf
                         <div>

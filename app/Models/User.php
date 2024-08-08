@@ -40,4 +40,19 @@ class User extends Authenticatable
     public function role() {
         return $this->belongsTo(Role::class);
     }
+
+    public function permissions(): Attribute
+    {
+        return new Attribute(
+            get: function () {
+                return RolePermission::where("role_id", $this->role_id)
+                    ->join(
+                        "permissions",
+                        "role_permissions.permission_id",
+                        "permissions.id"
+                    )
+                    ->pluck("permissions.name");
+            }
+        );
+    }
 }

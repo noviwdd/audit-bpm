@@ -44,7 +44,8 @@ Route::delete('/manajemen-unit/{id}', [ManagementUnitController::class, 'destroy
 
 // Management User
 Route::get('/manajemen-pengguna', [ManagementUserController::class, 'index'])->name('management-user.index');
-Route::post('/manajemen-pengguna/{id?}', [ManagementUserController::class, 'store'])->name('management-user.store');
+Route::post('/manajemen-pengguna', [ManagementUserController::class, 'create'])->name('management-user.create');
+Route::put('/manajemen-pengguna/{id}', [ManagementUserController::class, 'update'])->name('management-user.update');
 Route::delete('/manajemen-pengguna/{id}', [ManagementUserController::class, 'destroy'])->name('management-user.destroy');
 
 
