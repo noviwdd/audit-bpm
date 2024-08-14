@@ -81,6 +81,8 @@ Route::put('/unit/{unit_id}/details/{id}', [UnitDetailController::class, 'update
 Route::delete('/unit/{unit_id}/details/{id}', [UnitDetailController::class, 'remove']);
 
 Route::get('performace-unit', [PerformanceUnitController::class, 'index']);
+Route::post('performace-unit', [PerformanceUnitController::class, 'create'])->name('performance-unit.create');
+Route::put('performace-unit/{id}', [PerformanceUnitController::class, 'update'])->name('performance-unit.update');
 
 // Question
 Route::get('/storeDumpQuestion', [QuestionController::class, 'storeDumpData']);
