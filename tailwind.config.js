@@ -28,7 +28,10 @@ export default {
             'amber': '#F2B705',
             'whiteSmoke': '#F5F5F5',
             'jet': '#333333',
-            'abu': '#777777'
+            'abu': '#777777',
+            'orange-peel': '#FF9800',
+            'cerulean': '#006E90',
+            'danger': '#D32F2F'
         },
         fontFamily: {
             sans: ['Inter', 'sans-serif'],
