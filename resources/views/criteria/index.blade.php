@@ -24,8 +24,8 @@
                     <tr class="hover:bg-gray-50 px-2.5">
                         <td class="text-center px-6 py-2">{{ $index + 1 }}</td>
                         <td class="px-6 py-2">{{ $item->name ?? null }}</td>
-                        <td>
-                            <div class="flex flex-row gap-2">
+                        <td class="">
+                            <div class="justify-center flex flex-row gap-2">
                                 <button data-modal-target="criteria-modal" data-modal-toggle="criteria-modal"
                                     class="px-4 py-2 text-sm text-center font-medium inline-flex items-center rounded-md border border-amber bg-amber text-white hover:bg-white hover:text-amber hover:border hover:border-amber"
                                     onclick="openModal('edit', {{ $item->id }}, '{{ $item->name }}')">Edit</button>
