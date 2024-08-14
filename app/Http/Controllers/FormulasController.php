@@ -10,6 +10,7 @@ use App\Models\Target;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class FormulasController extends Controller
@@ -23,15 +24,17 @@ class FormulasController extends Controller
         $this->question = new QuestionsHelper;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         // generate score
         $this->generate();
 
+        $unit_id = $request->unit_id;
+        Session(['unit_id' => $unit_id]);
         $questions = collect($this->question->flattenQuestions());
         $questionCode = $questions->pluck('code');
         $predAccreditation = $this->predAccreditation();
-        $score = Score::where('unit_id', Auth::user()->unit_id)->get()->keyBy('question_id');
+        $score = Score::where('unit_id', $unit_id)->get()->keyBy('question_id');
 
         $displayedCodes = [];
         $tableData = [];
@@ -51,36 +54,36 @@ class FormulasController extends Controller
                 $sebutan = '';
                 if ($achieveScore == 4) {
                     $sebutan = 'Sangat Baik';
-                    $sebutanClass = 'bg-caribbean';
+                    $sebutanClass = 'caribbean';
                 } elseif ($achieveScore >= 3) {
                     $sebutan = 'Baik';
-                    $sebutanClass = 'bg-caribbean/75';
+                    $sebutanClass = 'teal';
                 } elseif ($achieveScore >= 2) {
                     $sebutan = 'Cukup';
-                    $sebutanClass = 'bg-amber';
+                    $sebutanClass = 'amber';
                 } elseif ($achieveScore >= 1) {
                     $sebutan = 'Kurang';
-                    $sebutanClass = 'bg-[#FF9800]';
+                    $sebutanClass = 'orange-peel';
                 } elseif ($achieveScore >= 0) {
                     $sebutan = 'Sangat Kurang';
-                    $sebutanClass = 'bg-[#D32F2F]';
+                    $sebutanClass = '[#D32F2F]';
                 } else {
                     $sebutan = '';
                     $sebutanClass = '';
                 }
 
                 $ketercapaian = '';
-                if ($targetScore > $achieveScore) {
+                if ($targetScore > $achieveScore || ($targetScore == 0 && $achieveScore == 0)) {
                     $ketercapaian = 'Tidak Tercapai';
-                    $ketercapaianClass = 'bg-[#D32F2F]';
+                    $ketercapaianClass = '[#D32F2F]';
                     $totalTidakTercapai++;
                 } elseif ($targetScore == $achieveScore) {
                     $ketercapaian = 'Tercapai';
-                    $ketercapaianClass = 'bg-blue-800/75';
+                    $ketercapaianClass = 'cerulean';
                     $totalTercapai++;
                 } elseif ($targetScore < $achieveScore) {
                     $ketercapaian = 'Terlampaui';
-                    $ketercapaianClass = 'bg-caribbean';
+                    $ketercapaianClass = 'caribbean';
                     $totalTerlampaui++;
                 } else {
                     $ketercapaian = '';
@@ -122,9 +125,9 @@ class FormulasController extends Controller
     public function generate()
     {
         $formulas = $this->formula->getFormula();
-
-        $targetAnswers = Target::where('unit_id', Auth::user()->unit_id)->get()->keyBy('question_id');
-        $achieveAnswers = Achievement::where('unit_id', Auth::user()->unit_id)->get()->keyBy('question_id');
+        $unit_id = Session('unit_id');
+        $targetAnswers = Target::where('unit_id', $unit_id)->get()->keyBy('question_id');
+        $achieveAnswers = Achievement::where('unit_id', $unit_id)->get()->keyBy('question_id');
 
         $targetResults = $this->processFormula($formulas, $targetAnswers);
         $achieveResults = $this->processFormula($formulas, $achieveAnswers);
@@ -138,7 +141,7 @@ class FormulasController extends Controller
             $achieveValue = Arr::get($achieveResults, $key);
             Score::updateOrCreate(
                 [
-                    'unit_id' => Auth::user()->unit_id,
+                    'unit_id' => $unit_id,
                     'question_id' => $key,
                 ],
                 [
@@ -261,7 +264,8 @@ class FormulasController extends Controller
 
         foreach ($questionCode as $question) {
             $weightQuestion = $this->question->getWeight($question);
-            $score = Score::where('question_id', $question)->first();
+            $unit_id = Session('unit_id');
+            $score = Score::where('question_id', $question)->where('unit_id', $unit_id)->first();
 
             if ($score) {
                 $achieveScore = $score->achieve_score;
@@ -297,21 +301,21 @@ class FormulasController extends Controller
         });
 
         foreach (Arr::get($formulas, 'formula2') as $formula) {
-            $valueA = $formula2Answers[$formula[0]]['target_answer'] ?? $formula2Answers[$formula[0]]['achieve_answer'];
-            $valueB = $formula2Answers[$formula[1]]['target_answer'] ?? $formula2Answers[$formula[1]]['achieve_answer'];
-            $hasilKey = substr($formula[0], 0, -1) . 'HASIL';
-            $hasil = $this->formula2(
-                $valueA,
-                $valueB
-            );
-            // $answerGroup[] = [
-            //     $formula[0] => $valueA,
-            //     $formula[1] => $valueB,
-            //     $hasilKey => $hasil
-            // ];
-            $results[$formula[0]] = $valueA;
-            $results[$formula[1]] = $valueB;
-            $results[$hasilKey] = $hasil;
+            if (!isset($formula2Answers[$formula[0]]) || !isset($formula2Answers[$formula[1]])) {
+                $valueA = 0;
+                $valueB = 0;
+            } else {
+                $valueA = $formula2Answers[$formula[0]]['target_answer'] ?? $formula2Answers[$formula[0]]['achieve_answer'];
+                $valueB = $formula2Answers[$formula[1]]['target_answer'] ?? $formula2Answers[$formula[1]]['achieve_answer'];
+                $hasilKey = substr($formula[0], 0, -1) . 'HASIL';
+                $hasil = $this->formula2(
+                    $valueA,
+                    $valueB
+                );
+                $results[$formula[0]] = $valueA;
+                $results[$formula[1]] = $valueB;
+                $results[$hasilKey] = $hasil;
+            }
         }
 
         // Formula 3
@@ -321,16 +325,16 @@ class FormulasController extends Controller
         });
 
         foreach (Arr::get($formulas, 'formula3') as $formula) {
-            $n1 = $formula3Answers['IBIK-STD-02.4A-N1']['target_answer'] ?? $formula3Answers['IBIK-STD-02.4A-N1']['achieve_answer'];
-            $n2 = $formula3Answers['IBIK-STD-02.4A-N2']['target_answer'] ?? $formula3Answers['IBIK-STD-02.4A-N2']['achieve_answer'];
-            $n3 = $formula3Answers['IBIK-STD-02.4A-N3']['target_answer'] ?? $formula3Answers['IBIK-STD-02.4A-N3']['achieve_answer'];
-            $ndtps = $formula3Answers['IBIK-STD-02.4A-NDTPS']['target_answer'] ?? $formula3Answers['IBIK-STD-02.4A-NDTPS']['achieve_answer'];
+            $n1 = isset($formula3Answers['IBIK-STD-02.4A-N1']) ? ($formula3Answers['IBIK-STD-02.4A-N1']['target_answer'] ?? $formula3Answers['IBIK-STD-02.4A-N1']['achieve_answer']) : 0;
+            $n2 = isset($formula3Answers['IBIK-STD-02.4A-N2']) ? ($formula3Answers['IBIK-STD-02.4A-N2']['target_answer'] ?? $formula3Answers['IBIK-STD-02.4A-N2']['achieve_answer']) : 0;
+            $n3 = isset($formula3Answers['IBIK-STD-02.4A-N3']) ? ($formula3Answers['IBIK-STD-02.4A-N3']['target_answer'] ?? $formula3Answers['IBIK-STD-02.4A-N3']['achieve_answer']) : 0;
+            $ndtps = isset($formula3Answers['IBIK-STD-02.4A-NDTPS']) ? ($formula3Answers['IBIK-STD-02.4A-NDTPS']['target_answer'] ?? $formula3Answers['IBIK-STD-02.4A-NDTPS']['achieve_answer']) : 0;
             $skor3A = $this->formula3A($n1, $n2, $n3, $ndtps);
             $results['IBIK-STD-02.4A'] = $skor3A;
 
-            $ni = $formula3Answers['IBIK-STD-02.4B-NI']['target_answer'] ?? $formula3Answers['IBIK-STD-02.4B-NI']['achieve_answer'];
-            $nn = $formula3Answers['IBIK-STD-02.4B-NN']['target_answer'] ?? $formula3Answers['IBIK-STD-02.4B-NN']['achieve_answer'];
-            $nw = $formula3Answers['IBIK-STD-02.4B-NW']['target_answer'] ?? $formula3Answers['IBIK-STD-02.4B-NW']['achieve_answer'];
+            $ni = isset($formula3Answers['IBIK-STD-02.4B-NI']) ? ($formula3Answers['IBIK-STD-02.4B-NI']['target_answer'] ?? $formula3Answers['IBIK-STD-02.4B-NI']['achieve_answer']) : 0;
+            $nn = isset($formula3Answers['IBIK-STD-02.4B-NN']) ? ($formula3Answers['IBIK-STD-02.4B-NN']['target_answer'] ?? $formula3Answers['IBIK-STD-02.4B-NN']['achieve_answer']) : 0;
+            $nw = isset($formula3Answers['IBIK-STD-02.4B-NW']) ? ($formula3Answers['IBIK-STD-02.4B-NW']['target_answer'] ?? $formula3Answers['IBIK-STD-02.4B-NW']['achieve_answer']) : 0;
             $skor3B = $this->formula3B($ni, $nn, $nw);
             $results['IBIK-STD-02.4B'] = $skor3B;
 
@@ -344,8 +348,8 @@ class FormulasController extends Controller
             $item = collect($item);
             return in_array($item->get('question_id'), Arr::get($formulas, 'formula4'));
         });
-        $jp = $formula4Answers['IBIK-STD-03.1-JP']['target_answer'] ?? $formula4Answers['IBIK-STD-03.1-JP']['achieve_answer'];
-        $jpl = $formula4Answers['IBIK-STD-03.1-JPL']['target_answer'] ?? $formula4Answers['IBIK-STD-03.1-JPL']['achieve_answer'];
+        $jp = isset($formula4Answers['IBIK-STD-03.1-JP']) ? ($formula4Answers['IBIK-STD-03.1-JP']['target_answer'] ?? $formula4Answers['IBIK-STD-03.1-JP']['achieve_answer']) : 0;
+        $jpl = isset($formula4Answers['IBIK-STD-03.1-JPL']) ? ($formula4Answers['IBIK-STD-03.1-JPL']['target_answer'] ?? $formula4Answers['IBIK-STD-03.1-JPL']['achieve_answer']) : 0;
 
         $hasil = $this->formula4($jp, $jpl);
 
@@ -358,9 +362,9 @@ class FormulasController extends Controller
         });
 
         foreach (Arr::get($formulas, 'formula5') as $formula) {
-            $valueA = $formula5Answers[$formula[0]]['target_answer'] ?? $formula5Answers[$formula[0]]['achieve_answer'];
-            $nma = $formula5Answers[$formula[1]]['target_answer'] ?? $formula5Answers[$formula[1]]['achieve_answer'];
-            $nmd = $formula5Answers[$formula[2]]['target_answer'] ?? $formula5Answers[$formula[2]]['achieve_answer'];
+            $valueA = isset($formula5Answers[$formula[0]]) ? ($formula5Answers[$formula[0]]['target_answer'] ?? $formula5Answers[$formula[0]]['achieve_answer']) : 0;
+            $nma = isset($formula5Answers[$formula[1]]) ? ($formula5Answers[$formula[1]]['target_answer'] ?? $formula5Answers[$formula[1]]['achieve_answer']) : 0;
+            $nmd = isset($formula5Answers[$formula[2]]) ? ($formula5Answers[$formula[2]]['target_answer'] ?? $formula5Answers[$formula[2]]['achieve_answer']) : 0;
             $valueB = $this->formula5B($nma, $nmd);
 
             $hasilKey = substr($formula[0], 0, -1) . 'HASIL';
@@ -379,7 +383,7 @@ class FormulasController extends Controller
             return in_array($item->get('question_id'), Arr::get($formulas, 'formula6'));
         });
 
-        $ndtps = $formula6Answers['IBIK-STD-04.1-NDTPS']['target_answer'] ?? $formula6Answers['IBIK-STD-04.1-NDTPS']['achieve_answer'];
+        $ndtps = isset($formula6Answers['IBIK-STD-04.1-NDTPS']) ? ($formula6Answers['IBIK-STD-04.1-NDTPS']['target_answer'] ?? $formula6Answers['IBIK-STD-04.1-NDTPS']['achieve_answer']) : 0;
         $hasilKey = substr('IBIK-STD-04.1-NDTPS', 0, -6) . 'HASIL';
         $hasil = $this->formula6($ndtps);
         $results['IBIK-STD-04.1'] = $hasil;
@@ -390,8 +394,8 @@ class FormulasController extends Controller
             return in_array($item->get('question_id'), Arr::get($formulas, 'formula7'));
         });
 
-        $nds3 = $formula7Answers['IBIK-STD-04.2-NDS3']['target_answer'] ?? $formula7Answers['IBIK-STD-04.2-NDS3']['achieve_answer'];
-        $ndtps = $formula7Answers['IBIK-STD-04.2-NDTPS']['target_answer'] ?? $formula7Answers['IBIK-STD-04.2-NDTPS']['achieve_answer'];
+        $nds3 = isset($formula7Answers['IBIK-STD-04.2-NDS3']) ? ($formula7Answers['IBIK-STD-04.2-NDS3']['target_answer'] ?? $formula7Answers['IBIK-STD-04.2-NDS3']['achieve_answer']) : 0;
+        $ndtps = isset($formula7Answers['IBIK-STD-04.2-NDTPS']) ? ($formula7Answers['IBIK-STD-04.2-NDTPS']['target_answer'] ?? $formula7Answers['IBIK-STD-04.2-NDTPS']['achieve_answer']) : 0;
         $hasil = $this->formula7($nds3, $ndtps);
         $results['IBIK-STD-04.2'] = $hasil;
 
@@ -401,10 +405,10 @@ class FormulasController extends Controller
             return in_array($item->get('question_id'), Arr::get($formulas, 'formula8'));
         });
 
-        $ndgb = $formula8Answers['IBIK-STD-04.3-NDGB']['target_answer'] ?? $formula8Answers['IBIK-STD-04.3-NDGB']['achieve_answer'];
-        $ndlk = $formula8Answers['IBIK-STD-04.3-NDLK']['target_answer'] ?? $formula8Answers['IBIK-STD-04.3-NDLK']['achieve_answer'];
-        $ndl = $formula8Answers['IBIK-STD-04.3-NDL']['target_answer'] ?? $formula8Answers['IBIK-STD-04.3-NDL']['achieve_answer'];
-        $ndtps = $formula8Answers['IBIK-STD-04.3-NDTPS']['target_answer'] ?? $formula8Answers['IBIK-STD-04.3-NDTPS']['achieve_answer'];
+        $ndgb = isset($formula8Answers['IBIK-STD-04.3-NDGB']) ? ($formula8Answers['IBIK-STD-04.3-NDGB']['target_answer'] ?? $formula8Answers['IBIK-STD-04.3-NDGB']['achieve_answer']) : 0;
+        $ndlk = isset($formula8Answers['IBIK-STD-04.3-NDLK']) ? ($formula8Answers['IBIK-STD-04.3-NDLK']['target_answer'] ?? $formula8Answers['IBIK-STD-04.3-NDLK']['achieve_answer']) : 0;
+        $ndl = isset($formula8Answers['IBIK-STD-04.3-NDL']) ? ($formula8Answers['IBIK-STD-04.3-NDL']['target_answer'] ?? $formula8Answers['IBIK-STD-04.3-NDL']['achieve_answer']) : 0;
+        $ndtps = isset($formula8Answers['IBIK-STD-04.3-NDTPS']) ? ($formula8Answers['IBIK-STD-04.3-NDTPS']['target_answer'] ?? $formula8Answers['IBIK-STD-04.3-NDTPS']['achieve_answer']) : 0;
         $hasil = $this->formula8($ndgb, $ndlk, $ndl, $ndtps);
         $results['IBIK-STD-04.3'] = $hasil;
 
@@ -414,8 +418,8 @@ class FormulasController extends Controller
             return in_array($item->get('question_id'), Arr::get($formulas, 'formula9'));
         });
 
-        $nm = $formula9Answers['IBIK-STD-04.4-NM']['target_answer'] ?? $formula9Answers['IBIK-STD-04.4-NM']['achieve_answer'];
-        $ndtps = $formula9Answers['IBIK-STD-04.4-NDTPS']['target_answer'] ?? $formula9Answers['IBIK-STD-04.4-NDTPS']['achieve_answer'];
+        $nm = isset($formula9Answers['IBIK-STD-04.4-NM']) ? ($formula9Answers['IBIK-STD-04.4-NM']['target_answer'] ?? $formula9Answers['IBIK-STD-04.4-NM']['achieve_answer']) : 0;
+        $ndtps = isset($formula9Answers['IBIK-STD-04.4-NDTPS']) ? ($formula9Answers['IBIK-STD-04.4-NDTPS']['target_answer'] ?? $formula9Answers['IBIK-STD-04.4-NDTPS']['achieve_answer']) : 0;
         $hasil = $this->formula9($nm, $ndtps);
         $results['IBIK-STD-04.4'] = $hasil;
 
@@ -425,7 +429,7 @@ class FormulasController extends Controller
             return in_array($item->get('question_id'), Arr::get($formulas, 'formula10'));
         });
 
-        $rdpu = $formula10Answers['IBIK-STD-04.5-RDPU']['target_answer'] ?? $formula10Answers['IBIK-STD-04.5-RDPU']['achieve_answer'];
+        $rdpu = isset($formula10Answers['IBIK-STD-04.5-RDPU']) ? ($formula10Answers['IBIK-STD-04.5-RDPU']['target_answer'] ?? $formula10Answers['IBIK-STD-04.5-RDPU']['achieve_answer']) : 0;
         $hasil = $this->formula10($rdpu);
         $results['IBIK-STD-04.5'] = $hasil;
 
@@ -435,7 +439,7 @@ class FormulasController extends Controller
             return in_array($item->get('question_id'), Arr::get($formulas, 'formula11'));
         });
 
-        $rewmp = $formula11Answers['IBIK-STD-04.6-REWMP']['target_answer'] ?? $formula11Answers['IBIK-STD-04.6-REWMP']['achieve_answer'];
+        $rewmp = isset($formula11Answers['IBIK-STD-04.6-REWMP']) ? ($formula11Answers['IBIK-STD-04.6-REWMP']['target_answer'] ?? $formula11Answers['IBIK-STD-04.6-REWMP']['achieve_answer']) : 0;
         $hasil = $this->formula11($rewmp);
         $results['IBIK-STD-04.6'] = $hasil;
 
@@ -445,8 +449,8 @@ class FormulasController extends Controller
             return in_array($item->get('question_id'), Arr::get($formulas, 'formula12'));
         });
 
-        $ndtt = $formula12Answers['IBIK-STD-04.7-NDTT']['target_answer'] ?? $formula12Answers['IBIK-STD-04.7-NDTT']['achieve_answer'];
-        $ndt = $formula12Answers['IBIK-STD-04.7-NDT']['target_answer'] ?? $formula12Answers['IBIK-STD-04.7-NDT']['achieve_answer'];
+        $ndtt = isset($formula12Answers['IBIK-STD-04.7-NDTT']) ? ($formula12Answers['IBIK-STD-04.7-NDTT']['target_answer'] ?? $formula12Answers['IBIK-STD-04.7-NDTT']['achieve_answer']) : 0;
+        $ndt = isset($formula12Answers['IBIK-STD-04.7-NDT']) ? ($formula12Answers['IBIK-STD-04.7-NDT']['target_answer'] ?? $formula12Answers['IBIK-STD-04.7-NDT']['achieve_answer']) : 0;
         $hasil = $this->formula12($ndtt, $ndt);
         $results['IBIK-STD-04.7'] = $hasil;
 
@@ -456,8 +460,8 @@ class FormulasController extends Controller
             return in_array($item->get('question_id'), Arr::get($formulas, 'formula13'));
         });
 
-        $nrd = $formula13Answers['IBIK-STD-04.8-NRD']['target_answer'] ?? $formula13Answers['IBIK-STD-04.8-NRD']['achieve_answer'];
-        $ndtps = $formula13Answers['IBIK-STD-04.8-NDTPS']['target_answer'] ?? $formula13Answers['IBIK-STD-04.8-NDTPS']['achieve_answer'];
+        $nrd = isset($formula13Answers['IBIK-STD-04.8-NRD']) ? ($formula13Answers['IBIK-STD-04.8-NRD']['target_answer'] ?? $formula13Answers['IBIK-STD-04.8-NRD']['achieve_answer']) : 0;
+        $ndtps = isset($formula13Answers['IBIK-STD-04.8-NDTPS']) ? ($formula13Answers['IBIK-STD-04.8-NDTPS']['target_answer'] ?? $formula13Answers['IBIK-STD-04.8-NDTPS']['achieve_answer']) : 0;
         $hasil = $this->formula13($nrd, $ndtps);
         $results['IBIK-STD-04.8'] = $hasil;
 
@@ -469,10 +473,10 @@ class FormulasController extends Controller
 
 
         foreach (Arr::get($formulas, 'formula14') as $formula) {
-            $ni = $formula14Answers[$formula[0]]['target_answer'] ?? $formula14Answers[$formula[0]]['achieve_answer'];
-            $nn = $formula14Answers[$formula[1]]['target_answer'] ?? $formula14Answers[$formula[1]]['achieve_answer'];
-            $nl = $formula14Answers[$formula[2]]['target_answer'] ?? $formula14Answers[$formula[2]]['achieve_answer'];
-            $ntps = $formula14Answers[$formula[3]]['target_answer'] ?? $formula14Answers[$formula[3]]['achieve_answer'];
+            $ni = isset($formula14Answers[$formula[0]]) ? ($formula14Answers[$formula[0]]['target_answer'] ?? $formula14Answers[$formula[0]]['achieve_answer']) : 0;
+            $nn = isset($formula14Answers[$formula[1]]) ? ($formula14Answers[$formula[1]]['target_answer'] ?? $formula14Answers[$formula[1]]['achieve_answer']) : 0;
+            $nl = isset($formula14Answers[$formula[2]]) ? ($formula14Answers[$formula[2]]['target_answer'] ?? $formula14Answers[$formula[2]]['achieve_answer']) : 0;
+            $ntps = isset($formula14Answers[$formula[3]]) ? ($formula14Answers[$formula[3]]['target_answer'] ?? $formula14Answers[$formula[3]]['achieve_answer']) : 0;
 
             $hasil = $this->formula14($ni, $nn, $nl, $ntps);
             $hasilKey = substr($formula[0], 0, -3);
@@ -545,8 +549,8 @@ class FormulasController extends Controller
         });
 
         foreach (Arr::get($formulas, 'formula19') as $formula) {
-            $valueA = $formula19Answers[$formula[0]]['target_answer'] ?? $formula19Answers[$formula[0]]['achieve_answer'];
-            $valueB = $formula19Answers[$formula[1]]['target_answer'] ?? $formula19Answers[$formula[1]]['achieve_answer'];
+            $valueA = isset($formula19Answers[$formula[0]]) ? ($formula19Answers[$formula[0]]['target_answer'] ?? $formula19Answers[$formula[0]]['achieve_answer']) : 0;
+            $valueB = isset($formula19Answers[$formula[1]]) ? ($formula19Answers[$formula[1]]['target_answer'] ?? $formula19Answers[$formula[1]]['achieve_answer']) : 0;
             $hasilKey = substr($formula[0], 0, -1) . 'HASIL';
             $hasil = $this->formula19(
                 $valueA,
@@ -624,9 +628,9 @@ class FormulasController extends Controller
         });
 
         foreach (Arr::get($formulas, 'formula24') as $formula) {
-            $valueA = $formula24Answers[$formula[0]]['target_answer'] ?? $formula24Answers[$formula[0]]['achieve_answer'];
-            $valueB = $formula24Answers[$formula[1]]['target_answer'] ?? $formula24Answers[$formula[1]]['achieve_answer'];
-            $valueC = $formula24Answers[$formula[2]]['target_answer'] ?? $formula24Answers[$formula[2]]['achieve_answer'];
+            $valueA = isset($formula24Answers[$formula[0]]) ? ($formula24Answers[$formula[0]]['target_answer'] ?? $formula24Answers[$formula[0]]['achieve_answer']) : 0;
+            $valueB = isset($formula24Answers[$formula[1]]) ? ($formula24Answers[$formula[1]]['target_answer'] ?? $formula24Answers[$formula[1]]['achieve_answer']) : 0;
+            $valueC = isset($formula24Answers[$formula[2]]) ? ($formula24Answers[$formula[2]]['target_answer'] ?? $formula24Answers[$formula[2]]['achieve_answer']) : 0;
             $hasilKey = substr($formula[0], 0, -1) . 'HASIL';
             $hasil = $this->formula24(
                 $valueA,
@@ -646,11 +650,11 @@ class FormulasController extends Controller
         });
 
         foreach (Arr::get($formulas, 'formula25') as $formula) {
-            $valueA = $formula25Answers[$formula[0]]['target_answer'] ?? $formula25Answers[$formula[0]]['achieve_answer'];
-            $valueB = $formula25Answers[$formula[1]]['target_answer'] ?? $formula25Answers[$formula[1]]['achieve_answer'];
-            $valueC = $formula25Answers[$formula[2]]['target_answer'] ?? $formula25Answers[$formula[2]]['achieve_answer'];
-            $valueD = $formula25Answers[$formula[3]]['target_answer'] ?? $formula25Answers[$formula[2]]['achieve_answer'];
-            $valueE = $formula25Answers[$formula[4]]['target_answer'] ?? $formula25Answers[$formula[2]]['achieve_answer'];
+            $valueA = isset($formula25Answers[$formula[0]]) ? ($formula25Answers[$formula[0]]['target_answer'] ?? $formula25Answers[$formula[0]]['achieve_answer']) : 0;
+            $valueB = isset($formula25Answers[$formula[1]]) ? ($formula25Answers[$formula[1]]['target_answer'] ?? $formula25Answers[$formula[1]]['achieve_answer']) : 0;
+            $valueC = isset($formula25Answers[$formula[2]]) ? ($formula25Answers[$formula[2]]['target_answer'] ?? $formula25Answers[$formula[2]]['achieve_answer']) : 0;
+            $valueD = isset($formula25Answers[$formula[3]]) ? ($formula25Answers[$formula[3]]['target_answer'] ?? $formula25Answers[$formula[2]]['achieve_answer']) : 0;
+            $valueE = isset($formula25Answers[$formula[4]]) ? ($formula25Answers[$formula[4]]['target_answer'] ?? $formula25Answers[$formula[2]]['achieve_answer']) : 0;
             $hasilKey = substr($formula[0], 0, -1) . 'HASIL';
             $hasil = $this->formula25($valueA, $valueB, $valueC, $valueD, $valueE);
             $results[$formula[0]] = $valueA;
@@ -703,7 +707,7 @@ class FormulasController extends Controller
 
         foreach (Arr::get($formulas, 'formula28') as $formula) {
             $valueA = $this->formula28A($groupAnswer);
-            $valueB = $formula28Answers[$formula[1]]['target_answer'] ?? $formula28Answers[$formula[1]]['achieve_answer'];
+            $valueB = isset($formula28Answers[$formula[1]]) ? ($formula28Answers[$formula[1]]['target_answer'] ?? $formula28Answers[$formula[1]]['achieve_answer']) : 0;
             $hasil = $this->formula28($valueA, $valueB);
             $hasilKey = substr($formula[0], 0, -1) . 'HASIL';
             $results[$formula[0]] = $valueA;
@@ -970,7 +974,11 @@ class FormulasController extends Controller
         $NMA = $nma ?? 0;
         $NMD = $nmd ?? 0;
 
-        $PMA = $NMA / $NMD;
+        if ($NMD > 0) {
+            $PMA = $NMA / $NMD;
+        } else {
+            $PMA = 0;
+        }
 
         if ($PMA < 1) {
             $skorB = 2 + (200 * $PMA);
@@ -1005,7 +1013,12 @@ class FormulasController extends Controller
         $NDS3 = $nds3 ?? 0;
         $NDTPS = $ndtps ?? 0;
 
-        $PDS3 = $NDS3 / $NDTPS * 100;
+        if ($NDTPS > 0) {
+            $PDS3 = $NDS3 / $NDTPS * 100;
+        } else {
+            $PDS3 = 0;
+        }
+
 
         if ($PDS3 < 50) {
             $skor = 2 + (4 * $PDS3) / 100;
@@ -1043,7 +1056,11 @@ class FormulasController extends Controller
         $NM = $nm ?? 0;
         $NDTPS = $ndtps ?? 0;
 
-        $RMD = $NM / $NDTPS;
+        if ($NDTPS > 0) {
+            $RMD = $NM / $NDTPS;
+        } else {
+            $RMD = 0;
+        }
 
         if ($RMD > 50) {
             $skor = 0;
@@ -1165,7 +1182,7 @@ class FormulasController extends Controller
         } elseif ($RI >= $a) {
             $skor = 4;
         } else {
-            $skor = 'Data tidak valid';
+            $skor = null;
         }
 
         return $skor;
@@ -1210,7 +1227,7 @@ class FormulasController extends Controller
         } elseif ($RI >= $a) {
             $skor = 4;
         } else {
-            $skor = 'Data tidak valid';
+            $skor = null;
         }
 
         return $skor;
@@ -1285,7 +1302,7 @@ class FormulasController extends Controller
         } elseif ($DOP >= 20) {
             $skor = 4;
         } else {
-            $skor = 'Data tidak valid';
+            $skor = null;
         }
 
         return $skor;
@@ -1300,7 +1317,7 @@ class FormulasController extends Controller
         } elseif ($DPD >= 10) {
             $skor = 4;
         } else {
-            $skor = 'Data tidak valid';
+            $skor = null;
         }
 
         return $skor;
@@ -1315,7 +1332,7 @@ class FormulasController extends Controller
         } elseif ($DPkMD >= 5) {
             $skor = 4;
         } else {
-            $skor = 'Data tidak valid';
+            $skor = null;
         }
 
         return $skor;
@@ -1373,7 +1390,7 @@ class FormulasController extends Controller
         } elseif ($NMKI > 3) {
             $skor = 4;
         } else {
-            return 'Data tidak valid';
+            return null;
         }
 
         return $skor;
@@ -1427,7 +1444,7 @@ class FormulasController extends Controller
         } elseif ($PPDM >= 25) {
             $skor = 4;
         } else {
-            return 'Data tidak valid';
+            return null;
         }
         return $skor;
     }
@@ -1448,7 +1465,7 @@ class FormulasController extends Controller
         } elseif ($PPkMDM >= 25) {
             $skor = 4;
         } else {
-            return 'Data tidak valid';
+            return null;
         }
         return $skor;
     }
@@ -1462,7 +1479,7 @@ class FormulasController extends Controller
         } elseif ($RIPK >= 3.25) {
             $skor = 4;
         } else {
-            return 'Data tidak valid';
+            return null;
         }
 
         return $skor;
@@ -1500,7 +1517,7 @@ class FormulasController extends Controller
         } elseif ($RI >= $a) {
             $skor = 4;
         } else {
-            $skor = 'Data tidak valid';
+            $skor = null;
         }
 
         return $skor;
@@ -1538,7 +1555,7 @@ class FormulasController extends Controller
         } elseif ($RI >= $a) {
             $skor = 4;
         } else {
-            $skor = 'Data tidak valid';
+            $skor = null;
         }
 
         return $skor;
@@ -1546,7 +1563,7 @@ class FormulasController extends Controller
 
     public function formula34($values)
     {
-        $MS = $values['MS'];
+        $MS = $values['MS'] ?? 0;
 
         if ($MS <= 3) {
             $skor = 0;
@@ -1557,7 +1574,7 @@ class FormulasController extends Controller
         } elseif (3.5 < $MS && $MS <= 4.5) {
             $skor = 4;
         } else {
-            return 'Data tidak valid';
+            return null;
         }
 
         return $skor;
@@ -1572,7 +1589,7 @@ class FormulasController extends Controller
         } elseif ($PTW >= 50) {
             $skor = 4;
         } else {
-            return 'Data tidak valid';
+            return null;
         }
 
         return $skor;
@@ -1587,7 +1604,7 @@ class FormulasController extends Controller
         } elseif ($PPS >= 85) {
             $skor = 4;
         } else {
-            return 'Data tidak valid';
+            return null;
         }
 
         return $skor;
@@ -1604,7 +1621,7 @@ class FormulasController extends Controller
         } elseif ($WT < 6) {
             $skor = 4;
         } else {
-            return 'Data tidak valid';
+            return null;
         }
 
         return $skor;
@@ -1619,7 +1636,7 @@ class FormulasController extends Controller
         } elseif ($PBS >= 60) {
             $skor = 4;
         } else {
-            return 'Data tidak valid';
+            return null;
         }
 
         return $skor;
@@ -1658,7 +1675,7 @@ class FormulasController extends Controller
         } elseif ($RI >= $a) {
             $skor = 4;
         } else {
-            $skor = 'Data tidak valid';
+            $skor = null;
         }
 
         if ($NL > 0) {
@@ -1678,7 +1695,7 @@ class FormulasController extends Controller
         } elseif ($PJ < $Prmin) {
             $skorAkhir = ($PJ / $Prmin) * $skor;
         } else {
-            $skorAkhir = 'Data tidak valid';
+            $skorAkhir = null;
         }
 
         return $skorAkhir;
@@ -1762,7 +1779,7 @@ class FormulasController extends Controller
         } elseif ($RI >= $a) {
             $skor = 4;
         } else {
-            $skor = 'Data tidak valid';
+            $skor = null;
         }
 
         return $skor;
@@ -1782,7 +1799,7 @@ class FormulasController extends Controller
         } elseif ($NLP >= 1) {
             $skor = 4;
         } else {
-            return 'Data tidak valid';
+            return null;
         }
 
         return $skor;

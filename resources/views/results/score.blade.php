@@ -72,12 +72,12 @@
                         <td class="text-center">{{ $data['target_score'] }}</td>
                         <td class="text-center">{{ $data['achieve_score'] }}</td>
                         <td class="text-center">
-                            <span class="{{ $data['sebutan_class'] }} p-2 text-white text-sm rounded-lg w-full inline-block">
+                            <span class="bg-{{ $data['sebutan_class'] }} p-2 text-white text-sm rounded-lg w-full inline-block">
                                 {{ $data['sebutan'] }}
                             </span>
                         </td>
                         <td class="text-center">
-                            <span class="{{ $data['ketercapaian_class'] }} p-2 text-white text-sm rounded-lg w-full inline-block">
+                            <span class="bg-{{ $data['ketercapaian_class'] }} p-2 text-white text-sm rounded-lg w-full inline-block">
                                 {{ $data['ketercapaian'] }}
                             </span>
                         </td>
