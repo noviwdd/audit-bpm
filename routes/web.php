@@ -47,8 +47,9 @@ Route::get('/grafik', [GraphController::class, 'index'])->name('grafik.index');
 Route::get('/get-grafik-data', [GraphController::class, 'getChartData']);
 
 // Management Pertanyaan
-Route::get('/manajemen-pertanyaan', [QuestionController::class, 'index'])->name('questions.index');
-Route::get('/questions/{id}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
+Route::get('/data-pertanyaan', [QuestionController::class, 'index'])->name('questions.index');
+Route::get('/pertanyaan/{id?}', [QuestionController::class, 'edit'])->name('questions.edit');
+Route::post('/pertanyaan/{id?}', [QuestionController::class, 'store'])->name('questions.store');
 
 // Management Unit
 Route::get('/manajemen-unit', [ManagementUnitController::class, 'index'])->name('management-unit.index');
@@ -80,5 +81,6 @@ Route::put('/unit/{unit_id}/details/{id}', [UnitDetailController::class, 'update
 Route::delete('/unit/{unit_id}/details/{id}', [UnitDetailController::class, 'remove']);
 
 Route::get('performace-unit', [PerformanceUnitController::class, 'index']);
+
 // Question
 Route::get('/storeDumpQuestion', [QuestionController::class, 'storeDumpData']);
