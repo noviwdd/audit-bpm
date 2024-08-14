@@ -6,6 +6,7 @@ use App\Helpers\QuestionsHelper;
 use App\Models\Achievement;
 use App\Models\Target;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AchievementController extends Controller
 {

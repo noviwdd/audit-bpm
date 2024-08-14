@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('unit_id');
             $table->string('question_id');
-            $table->decimal('target_answer', 17, 16);
+            $table->decimal('target_answer', 10, 7);
             $table->timestamps();
         });
     }
