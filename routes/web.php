@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AchievementController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CriteriaController;
 use App\Http\Controllers\FormulasController;
 use App\Http\Controllers\GraphController;
 use App\Http\Controllers\LoginController;
@@ -9,9 +10,11 @@ use App\Http\Controllers\ManagementUnitController;
 use App\Http\Controllers\ManagementUserController;
 use App\Http\Controllers\PerformanceUnitController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\SubCriteriaController;
 use App\Http\Controllers\TargetController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UnitDetailController;
+use App\Models\Questions;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -26,6 +29,11 @@ Route::post('login', [LoginController::class, 'authenticate']);
 Route::get('/capaian', [AchievementController::class, 'index'])->name('achievement.index');
 Route::post('/capaian', [AchievementController::class, 'save'])->name('achievement.save');
 
+// Criteria
+Route::get('/criteria', [CriteriaController::class, 'index'])->name('criteria.index');
+Route::post('/criteria/{id?}', [CriteriaController::class, 'store'])->name('criteria.store');
+Route::delete('/criteria/{id}', [CriteriaController::class, 'destroy'])->name('criteria.destroy');
+
 // Target
 Route::get('/target', [TargetController::class, 'index'])->name('target.index');
 Route::post('/target', [TargetController::class, 'save'])->name('target.save');
@@ -37,6 +45,10 @@ Route::get('/generate', [FormulasController::class, 'generate'])->name('formula.
 // Graph
 Route::get('/grafik', [GraphController::class, 'index'])->name('grafik.index');
 Route::get('/get-grafik-data', [GraphController::class, 'getChartData']);
+
+// Management Pertanyaan
+Route::get('/manajemen-pertanyaan', [QuestionController::class, 'index'])->name('questions.index');
+Route::get('/questions/{id}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
 
 // Management Unit
 Route::get('/manajemen-unit', [ManagementUnitController::class, 'index'])->name('management-unit.index');
@@ -50,6 +62,10 @@ Route::put('/manajemen-pengguna/{id}', [ManagementUserController::class, 'update
 Route::delete('/manajemen-pengguna/{id}', [ManagementUserController::class, 'destroy'])->name('management-user.destroy');
 
 
+// Sub Criteria
+Route::get('/sub-kriteria', [SubCriteriaController::class, 'index'])->name('sub-criteria.index');
+Route::post('/sub-kriteria/{id?}', [SubCriteriaController::class, 'store'])->name('sub-criteria.store');
+Route::delete('/sub-kriteria/{id}', [SubCriteriaController::class, 'destroy'])->name('sub-criteria.destroy');
 
 // Unit
 Route::get('/units/{id?}', [UnitController::class, 'view']);
@@ -64,3 +80,5 @@ Route::put('/unit/{unit_id}/details/{id}', [UnitDetailController::class, 'update
 Route::delete('/unit/{unit_id}/details/{id}', [UnitDetailController::class, 'remove']);
 
 Route::get('performace-unit', [PerformanceUnitController::class, 'index']);
+// Question
+Route::get('/storeDumpQuestion', [QuestionController::class, 'storeDumpData']);

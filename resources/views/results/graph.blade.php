@@ -35,6 +35,13 @@
                             </tr>
                         @endforeach
                     </tbody>
+                    <tfoot class="text-sm">
+                        <tr class="bg-gray-100 text-jet text-center rounded-lg">
+                            <th class="px-6 py-2" colspan="2">Total Rata-rata</th>
+                            <td class="px-6 py-2">{{ $sumAvg }}</td>
+                            <td class="px-6 py-2 text-center "><span class="{{ $sebutan_class }} p-2 text-white text-sm rounded-lg w-full inline-block">{{ $sebutan }}</span></td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
             {{--  Saran Perbaikan  --}}
@@ -71,5 +78,6 @@
         <div id="allDataChartContainer" class="bg-white p-4 mt-3 rounded-lg shadow justify-center"></div>
     </div>
 
+    <input type="hidden" name="" class="bg-emerald-800">
     @include('results.graph-script')
 @endsection

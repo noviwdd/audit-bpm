@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->integer('unit_id');
             $table->string('question_id');
-            $table->decimal('target_score', 17, 16);
-            $table->decimal('achieve_score', 17, 16);
+            $table->decimal('target_score', 10, 7);
+            $table->decimal('achieve_score', 10, 7);
             $table->timestamps();
         });
     }

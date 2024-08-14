@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('achievements', function (Blueprint $table) {
+        Schema::create('sub_criterias', function (Blueprint $table) {
             $table->id();
-            $table->integer('unit_id');
-            $table->text('question_id');
-            $table->decimal('achieve_answer', 10, 7);
+            $table->foreignId('criteria_id')->constrained()->onDelete('cascade');
+            $table->string('name');
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('achievements');
+        Schema::dropIfExists('sub_criterias');
     }
 };

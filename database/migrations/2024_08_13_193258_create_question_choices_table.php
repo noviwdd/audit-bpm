@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('achievements', function (Blueprint $table) {
+        Schema::create('question_choices', function (Blueprint $table) {
             $table->id();
-            $table->integer('unit_id');
-            $table->text('question_id');
-            $table->decimal('achieve_answer', 10, 7);
+            $table->foreignId('question_id')->constrained()->onDelete('cascade');
+            $table->string('value');
+            $table->text('description');
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('achievements');
+        Schema::dropIfExists('question_choices');
     }
 };

@@ -6,6 +6,7 @@ use App\Helpers\QuestionsHelper;
 use App\Models\Target;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class TargetController extends Controller

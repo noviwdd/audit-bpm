@@ -16,10 +16,13 @@ class GraphController extends Controller
         $this->questionsHelper = new QuestionsHelper;
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        $unit_id = $request->unit_id;
+        session(['unit_id' => $unit_id]);
+
         $allQuestions = collect($this->questionsHelper->flattenQuestions());
-        $scores = Score::where('unit_id', Auth::user()->unit_id)->get()->keyBy('question_id');
+        $scores = Score::where('unit_id', $unit_id)->get()->keyBy('question_id');
         $groupedQuestions = $allQuestions->map(function ($item) use ($scores) {
             $questionId = $item['code'];
             return collect($item)
@@ -36,7 +39,7 @@ class GraphController extends Controller
                 $sebutanClass = 'bg-caribbean';
             } elseif ($averageScore >= 3) {
                 $sebutan = 'Baik';
-                $sebutanClass = 'bg-caribbean/75';
+                $sebutanClass = 'bg-emerald-800';
             } elseif ($averageScore >= 2) {
                 $sebutan = 'Cukup';
                 $sebutanClass = 'bg-amber';
@@ -74,16 +77,42 @@ class GraphController extends Controller
             ];
         })->values()->all();
 
+        $sumAvg = number_format(collect($tableData)->avg('average_score'), 2);
+
+        if ($sumAvg == 4) {
+            $sebutan = 'Sangat Baik';
+            $sebutanClass = 'bg-caribbean';
+        } elseif ($sumAvg >= 3) {
+            $sebutan = 'Baik';
+            $sebutanClass = 'bg-emerald-800';
+        } elseif ($sumAvg >= 2) {
+            $sebutan = 'Cukup';
+            $sebutanClass = 'bg-amber';
+        } elseif ($sumAvg >= 1) {
+            $sebutan = 'Kurang';
+            $sebutanClass = 'bg-[#FF9800]';
+        } elseif ($sumAvg >= 0) {
+            $sebutan = 'Sangat Kurang';
+            $sebutanClass = 'bg-[#D32F2F]';
+        } else {
+            $sebutan = '';
+            $sebutanClass = '';
+        }
+
         return view('results.graph')->with([
             'datas' => $tableData,
-            'saran_perbaikan' => $saranPerbaikan
+            'saran_perbaikan' => $saranPerbaikan,
+            'sumAvg' => $sumAvg,
+            'sebutan' => $sebutan,
+            'sebutan_class' => $sebutanClass
         ]);
     }
 
     public function getChartData()
     {
         $allQuestions = collect($this->questionsHelper->flattenQuestions());
-        $scores = Score::where('unit_id', 1)->get()->keyBy('question_id');
+        $unit_id = session('unit_id');
+        $scores = Score::where('unit_id', $unit_id)->get()->keyBy('question_id');
 
         $groupedQuestions = $allQuestions->map(function ($item) use ($scores) {
             $questionId = $item['code'];
