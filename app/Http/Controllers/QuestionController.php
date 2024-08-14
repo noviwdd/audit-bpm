@@ -25,10 +25,46 @@ class QuestionController extends Controller
         return view('management-question.index')->with('data', $questions);
     }
 
-    public function edit($id)
+    public function create()
     {
-        $question = Questions::with('choices', 'inputs')->findOrFail($id);
+        return view('management-question.edit');
+    }
+
+    public function edit($id = null)
+    {
+        $question = $id ? Questions::with('choices', 'inputs')->findOrFail($id) : new Questions();
         return view('management-question.edit', compact('question'));
+    }
+
+    public function store(Request $request, $id = null)
+    {
+        $question = Questions::updateOrCreate(
+            ['id' => $id],
+            [
+                'main_question' => $request->main_question,
+                'type' => $request->type,
+            ]
+        );
+
+        if ($question->type === 'option') {
+            $question->inputs()->delete();
+            $question->choices()->delete();
+            if (!empty($request->choices)) {
+                foreach ($request->choices as $choice) {
+                    $question->choices()->create($choice);
+                }
+            }
+        } elseif ($question->type === 'input') {
+            $question->choices()->delete();
+            $question->inputs()->delete();
+            if (!empty($request->inputs)) {
+                foreach ($request->inputs as $input) {
+                    $question->inputs()->create($input);
+                }
+            }
+        }
+
+        return redirect()->route('questions.index');
     }
 
     public function storeDumpData()

@@ -42,8 +42,7 @@
                             <p class="whitespace-pre-wrap p-2 text-sm text-gray-400">${choice.description}</p>
                         </label>
                     </div>
-                </li>`;
-                // content += `<li>${choice.value}: ${choice.description}</li>`;
+                </li>`
             });
             content += '</ul>';
         } else if (type === 'input' && inputs) {
@@ -73,6 +72,9 @@
 
         // Show the modal
         document.getElementById('question-modal').classList.remove('hidden');
+        document.getElementById('question-modal').classList.add('flex');
+        document.getElementById('question-modal').style.justifyContent = 'center';
+        document.getElementById('question-modal').style.alignItems = 'center';
     }
 
     function closeModal() {

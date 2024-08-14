@@ -3,11 +3,7 @@
 @section('content')
     <div class="flex flex-row justify-between items-center pb-3">
         <p class="text-xl font-bold text-gray-600 whitespace-nowrap">Daftar Pertanyaan</p>
-        {{--  <button
-            class="px-4 py-2 text-sm text-center font-medium inline-flex items-center rounded-md bg-teal text-white hover:bg-white hover:text-teal hover:border hover:border-teal"
-            data-modal-target="question-modal" data-modal-toggle="question-modal" onclick="openModal('add')">
-            <p>Tambah Pertanyaan</p>
-        </button>  --}}
+        <a href="{{ route('questions.edit') }}" class="px-4 py-2 text-sm text-center font-medium inline-flex items-center rounded-md bg-teal text-white hover:bg-white hover:text-teal hover:border hover:border-teal">Tambah Pertanyaan</a>
     </div>
 
     <div class="bg-white p-4 mt-3 rounded-lg shadow overflow-x-auto min-w-full">
@@ -64,7 +60,7 @@
 
     {{--  Modal  --}}
     <div id="question-modal" tabindex="-1" aria-hidden="true"
-        class="hidden fixed inset-0 z-50  justify-center items-center bg-black bg-opacity-75">
+    class="hidden fixed inset-0 z-50 justify-center items-center bg-black bg-opacity-75">
         <div class="relative overflow-y-auto justify-center p-4 w-full max-w-2xl max-h-full bg-white rounded-lg shadow-lg">
             <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
             <!-- Modal header -->
