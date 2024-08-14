@@ -7,6 +7,7 @@ use App\Http\Controllers\GraphController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ManagementUnitController;
 use App\Http\Controllers\ManagementUserController;
+use App\Http\Controllers\PerformanceUnitController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\TargetController;
 use App\Http\Controllers\UnitController;
@@ -61,3 +62,5 @@ Route::get('/unit/{unit_id}/details/{id?}', [UnitDetailController::class, 'view'
 Route::post('/unit/{unit_id}/details', [UnitDetailController::class, 'create']);
 Route::put('/unit/{unit_id}/details/{id}', [UnitDetailController::class, 'update']);
 Route::delete('/unit/{unit_id}/details/{id}', [UnitDetailController::class, 'remove']);
+
+Route::get('performace-unit', [PerformanceUnitController::class, 'index']);
