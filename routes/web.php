@@ -14,6 +14,8 @@ use App\Http\Controllers\SubCriteriaController;
 use App\Http\Controllers\TargetController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UnitDetailController;
+use App\Http\Controllers\WeightController;
+use App\Models\PerformanceUnit;
 use App\Models\Questions;
 use Illuminate\Support\Facades\Route;
 
@@ -50,6 +52,12 @@ Route::get('/get-grafik-data', [GraphController::class, 'getChartData']);
 Route::get('/data-pertanyaan', [QuestionController::class, 'index'])->name('questions.index');
 Route::get('/pertanyaan/{id?}', [QuestionController::class, 'edit'])->name('questions.edit');
 Route::post('/pertanyaan/{id?}', [QuestionController::class, 'store'])->name('questions.store');
+Route::get('/storeDumpQuestion', [QuestionController::class, 'storeDumpData']);
+
+Route::get('/storeDumpWeight', [WeightController::class, 'storeDataDump']);
+Route::get('/bobot', [WeightController::class, 'index'])->name('question-weight.index');
+Route::post('/bobot/{id?}', [WeightController::class, 'store'])->name('question-weight.store');
+Route::delete('/bobot/{id}', [WeightController::class, 'destroy'])->name('question-weight.destroy');
 
 // Management Unit
 Route::get('/manajemen-unit', [ManagementUnitController::class, 'index'])->name('management-unit.index');
@@ -80,9 +88,10 @@ Route::post('/unit/{unit_id}/details', [UnitDetailController::class, 'create']);
 Route::put('/unit/{unit_id}/details/{id}', [UnitDetailController::class, 'update']);
 Route::delete('/unit/{unit_id}/details/{id}', [UnitDetailController::class, 'remove']);
 
-Route::get('performace-unit', [PerformanceUnitController::class, 'index']);
-Route::post('performace-unit', [PerformanceUnitController::class, 'create'])->name('performance-unit.create');
-Route::put('performace-unit/{id}', [PerformanceUnitController::class, 'update'])->name('performance-unit.update');
+Route::get('performance-unit', [PerformanceUnitController::class, 'index'])->name('performance-unit.index');
+Route::post('performance-unit', [PerformanceUnitController::class, 'create'])->name('performance-unit.create');
+Route::put('performance-unit/{id}', [PerformanceUnitController::class, 'update'])->name('performance-unit.update');
+Route::delete('performance-unit/{id}', [PerformanceUnitController::class, 'destroy'])->name('performance-unit.delete');
 
 // Question
-Route::get('/storeDumpQuestion', [QuestionController::class, 'storeDumpData']);
+
