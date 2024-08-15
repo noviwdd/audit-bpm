@@ -25,7 +25,7 @@
                         <td class="text-center">{{ $index + 1 }}</td>
                         <td>{{ $item->name ?? null }}</td>
                         <td>
-                            <div class="flex flex-row gap-2">
+                            <div class="flex flex-row gap-2 justify-center">
                                 <button data-modal-target="unit-modal" data-modal-toggle="unit-modal"
                                     class="px-4 py-2 text-sm text-center font-medium inline-flex items-center rounded-md border border-amber bg-amber text-white hover:bg-white hover:text-amber hover:border hover:border-amber"
                                     onclick="openModal('edit', {{ $item->id }}, '{{ $item->name }}')">Edit</button>
