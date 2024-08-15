@@ -19,7 +19,7 @@ class PerformanceUnit extends Model
         'document',
         'evaluation_type',
         'description',
-        'work_planing',
+        'work_planning',
         'parent_id',
         'index_position'
     ];

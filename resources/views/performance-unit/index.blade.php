@@ -1,128 +1,167 @@
 @extends('layout.dashboard')
 @section('title', 'Performance Unit')
 @section('content')
-    <div class="block text-center">INSTITIT BISNIS DAN INFORMATIKA KESATUAN</div>
-    <div class="block text-center">EVAPORASI KINERJA TAHUN 2023</div>
-    <div class="block text-center">UNIT : PROGRAM STUDI S1 AKUNTANSI</div>
+    <div class="flex flex-row justify-between items-center pb-3">
+        <p class="text-xl font-bold text-gray-600 whitespace-nowrap">Evaluasi Kinerja Unit per Tahun</p>
+    </div>
 
-    <form action="{{ url('performace-unit', ['id' => request()->edit_id]) }}" method="POST">
-        @csrf
-        @if (request()->has('edit_id'))
-            @method('PUT')
-        @endif
-        <input type="hidden" name="parent" value="{{ request()->parent }}">
-        <table class="border-collapse border border-slate-500 w-full mt-4">
-            <tr>
-                <th colspan="6" class="border border-slate-600 bg-slate-200">Ketercapaian Kinerja Unit</th>
-                <th colspan="4" class="border border-slate-600 bg-slate-200">Penilaian Auditor</th>
-                <th></th>
-            </tr>
-            <tr>
-                <th rowspan="2" class="border border-slate-600 bg-slate-200">NO</th>
-                <th rowspan="2" class="border border-slate-600 bg-slate-200">Keterangan</th>
-                <th rowspan="2" class="border border-slate-600 bg-slate-200">Target</th>
-                <th rowspan="2" class="border border-slate-600 bg-slate-200">Realisasi</th>
-                <th rowspan="2" class="border border-slate-600 bg-slate-200">Waktu Pelaksanaan</th>
-                <th rowspan="2" class="border border-slate-600 bg-slate-200">Dokumen</th>
-
-                <th colspan="3" class="border border-slate-600 bg-slate-200">Evaluasi</th>
-                <th rowspan="2" class="border border-slate-600 bg-slate-200">Catatan</th>
-                <th></th>
-            </tr>
-            <tr>
-                <th class="border border-slate-600 bg-slate-200">Tidak Terpenuhi</th>
-                <th class="border border-slate-600 bg-slate-200">Terpenuhi</th>
-                <th class="border border-slate-600 bg-slate-200">Terlampaui</th>
-                <th></th>
-            </tr>
-            @foreach ($data as $index => $item)
-                @if (request()->edit_id == $item->id)
-                    <tr>
-                        <td class="border border-slate-600 bg-slate-200 text-center">
-                            {{ $index + 1 }}
-                        </td>
-                        <td class="border border-slate-600 bg-slate-200">
-                            <input type="text" name="work_planing" class="bg-transparent h-8 w-full" value="{{ $item->work_planing }}">
-                        </td>
-                        <td class="border border-slate-600 bg-slate-200">
-                            <input type="text" name="target" class="bg-transparent h-8 w-full" value="{{ $item->target }}">
-                        </td>
-                        <td class="border border-slate-600 bg-slate-200">
-                            <input type="text" name="achieve" class="bg-transparent h-8 w-full" value="{{ $item->achieve }}">
-                        </td>
-                        <td class="border border-slate-600 bg-slate-200">
-                            <input type="text" name="time_target" class="bg-transparent h-8 w-full" value="{{ $item->time_target }}">
-                        </td>
-                        <td class="border border-slate-600 bg-slate-200">
-                            <input type="text" name="document" class="bg-transparent h-8 w-full" value="{{ $item->document }}">
-                        </td>
-                        <td class="border border-slate-600 bg-slate-200"></td>
-                        <td class="border border-slate-600 bg-slate-200"></td>
-                        <td class="border border-slate-600 bg-slate-200"></td>
-                        <td class="border border-slate-600 bg-slate-200"></td>
-                        <td class="border border-slate-600 bg-slate-200">
-                            <button type="submit">Simpan</button>
-                        </td>
-                    </tr>
-                @else
-                    <tr>
-                        <td class="border border-slate-600 bg-slate-200 text-center">{{ $index + 1 }}</td>
-                        <td class="border border-slate-600 bg-slate-200">{{ $item->work_planing }}</td>
-                        <td class="border border-slate-600 bg-slate-200 text-center">{{ $item->target }}</td>
-                        <td class="border border-slate-600 bg-slate-200 text-center">{{ $item->achieve }}</td>
-                        <td class="border border-slate-600 bg-slate-200 text-center">{{ $item->time_target }}</td>
-                        <td class="border border-slate-600 bg-slate-200 text-center">{{ $item->document }}</td>
-                        <td class="border border-slate-600 bg-slate-200 text-center"></td>
-                        <td class="border border-slate-600 bg-slate-200 text-center"></td>
-                        <td class="border border-slate-600 bg-slate-200 text-center"></td>
-                        <td class="border border-slate-600 bg-slate-200 text-center"></td>
-                        <td>
-                            <select onchange="actions(this, '{{ $item->id }}')">
-                                <option value="" selected></option>
-                                <option value="add_above">Add Above</option>
-                                <option value="add_below">Add Below</option>
-                                <option value="edit_id">Edit</option>
+    <div class="bg-white p-4 mt-3 rounded-lg shadow overflow-x-auto min-w-full">
+        <div class="mb-4">
+            <table>
+                <tr>
+                    <th class="text-left">Unit</th>
+                    <th>:</th>
+                    <td class="pl-2 capitalize">{{ $unit->name }}</td>
+                </tr>
+                <tr>
+                    <th class="text-left align-middle">Tahun</th>
+                    <th class="align-middle">:</th>
+                    <td class="pl-2 pt-4 align-middle">
+                        <form method="GET" action="{{ route('performance-unit.index') }}">
+                            <select name="year" onchange="this.form.submit()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                @foreach ($years as $year)
+                                    <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
+                                @endforeach
                             </select>
-                        </td>
-                    </tr>
-                @endif
-            @endforeach
-            
-            @if (!request()->edit_id)
-            <tr>
-                <td class="border border-slate-600 bg-slate-200 text-center">
-                    {{ request()->parent }}.
-                </td>
-                <td class="border border-slate-600 bg-slate-200">
-                    <input type="text" name="work_planing" class="bg-transparent h-8 w-full">
-                </td>
-                <td class="border border-slate-600 bg-slate-200">
-                    <input type="text" name="target" class="bg-transparent h-8 w-full">
-                </td>
-                <td class="border border-slate-600 bg-slate-200">
-                    <input type="text" name="achieve" class="bg-transparent h-8 w-full">
-                </td>
-                <td class="border border-slate-600 bg-slate-200">
-                    <input type="text" name="time_target" class="bg-transparent h-8 w-full">
-                </td>
-                <td class="border border-slate-600 bg-slate-200">
-                    <input type="text" name="document" class="bg-transparent h-8 w-full">
-                </td>
-                <td class="border border-slate-600 bg-slate-200"></td>
-                <td class="border border-slate-600 bg-slate-200"></td>
-                <td class="border border-slate-600 bg-slate-200"></td>
-                <td class="border border-slate-600 bg-slate-200"></td>
-                <td class="border border-slate-600 bg-slate-200">
-                    <button type="submit">Simpan</button>
-                </td>
-            </tr>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <form action="{{ url('performance-unit', ['id' => request()->edit_id]) }}" method="POST">
+            @csrf
+            @if (request()->has('edit_id'))
+                @method('PUT')
             @endif
-        </table>
-    </form>
+            <input type="hidden" name="parent" value="{{ request()->parent }}">
+            <table class="border-collapse border border-slate-500 w-full mt-4 text-sm text-jet">
+                <tr>
+                    <th colspan="6" class="border border-gray-400 p-2">Ketercapaian Kinerja Unit</th>
+                    <th colspan="4" class="border border-gray-400 p-2">Penilaian Auditor</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th rowspan="2" class="border border-gray-400 p-2">NO</th>
+                    <th rowspan="2" class="border border-gray-400 p-2">Keterangan</th>
+                    <th rowspan="2" class="border border-gray-400 p-2">Target</th>
+                    <th rowspan="2" class="border border-gray-400 p-2">Realisasi</th>
+                    <th rowspan="2" class="border border-gray-400 p-2">Waktu Pelaksanaan</th>
+                    <th rowspan="2" class="border border-gray-400 p-2">Dokumen</th>
+
+                    <th colspan="3" class="border border-gray-400 p-2">Evaluasi</th>
+                    <th rowspan="2" class="border border-gray-400 p-2">Catatan</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th class="border border-gray-400 p-2">Tidak Terpenuhi</th>
+                    <th class="border border-gray-400 p-2">Terpenuhi</th>
+                    <th class="border border-gray-400 p-2">Terlampaui</th>
+                    <th></th>
+                </tr>
+                @foreach ($data as $index => $item)
+                    @if (request()->edit_id == $item->id)
+                        <tr>
+                            <td class="border border-gray-400 p-2 text-center">
+                                {{ $index + 1 }}
+                            </td>
+                            <td class="border border-gray-400 p-2">
+                                <input type="text" name="work_planning" class="bg-transparent h-8 w-full border-0 border-b text-sm focus:rounded-lg focus:border-0 focus:ring-caribbean" value="{{ $item->work_planning }}">
+                            </td>
+                            <td class="border border-gray-400 p-2">
+                                <input type="text" name="target" class="bg-transparent h-8 w-full border-0 border-b text-sm focus:rounded-lg focus:border-0 focus:ring-caribbean" value="{{ $item->target }}">
+                            </td>
+                            <td class="border border-gray-400 p-2">
+                                <input type="text" name="achieve" class="bg-transparent h-8 w-full border-0 border-b text-sm focus:rounded-lg focus:border-0 focus:ring-caribbean" value="{{ $item->achieve }}">
+                            </td>
+                            <td class="border border-gray-400 p-2">
+                                <input type="text" name="time_target" class="bg-transparent h-8 w-full border-0 border-b text-sm focus:rounded-lg focus:border-0 focus:ring-caribbean" value="{{ $item->time_target }}">
+                            </td>
+                            <td class="border border-gray-400 p-2 w-1/5">
+                                <input type="file" name="document" class="bg-gray-50 w-full border border-gray-300 text-xs text-jet rounded-lg cursor-pointer" value="{{ $item->document }}">
+                            </td>
+                            <td class="border border-gray-400 p-2"></td>
+                            <td class="border border-gray-400 p-2"></td>
+                            <td class="border border-gray-400 p-2"></td>
+                            <td class="border border-gray-400 p-2"></td>
+                            <td class="border border-gray-400 p-2">
+                                <button type="submit" class="border-0 bg-caribbean text-white rounded-lg p-2 w-full">Simpan</button>
+                            </td>
+                        </tr>
+                    @else
+                        <tr>
+                            <td class="border border-gray-400 p-2 text-center">{{ $index + 1 }}</td>
+                            <td class="border border-gray-400 p-2">{{ $item->work_planning }}</td>
+                            <td class="border border-gray-400 p-2 text-center">{{ $item->target }}</td>
+                            <td class="border border-gray-400 p-2 text-center">{{ $item->achieve }}</td>
+                            <td class="border border-gray-400 p-2 text-center">{{ $item->time_target }}</td>
+                            <td class="border border-gray-400 p-2 text-center">{{ $item->document }}</td>
+                            <td class="border border-gray-400 p-2 text-center"></td>
+                            <td class="border border-gray-400 p-2 text-center"></td>
+                            <td class="border border-gray-400 p-2 text-center"></td>
+                            <td class="border border-gray-400 p-2 text-center"></td>
+                            <td class="border border-gray-400 p-2">
+                                <select onchange="actions(this, '{{ $item->id }}')" class="rounded-lg border-caribbean/50 text-sm focus:ring-caribbean">
+                                    <option value="" selected>Aksi</option>
+                                    <option value="add_above">Add Above</option>
+                                    <option value="add_below">Add Below</option>
+                                    <option value="edit_id">Edit</option>
+                                    <option value="hapus_id">Hapus</option>
+                                </select>
+                            </td>
+                            <form id="delete-form-{{ $item->id }}" action="{{ route('performance-unit.delete', $item->id) }}" method="POST" style="display: none;">
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                        </tr>
+                    @endif
+                @endforeach
+
+                @if (!request()->edit_id)
+                <tr>
+                    <td class="border border-gray-400 p-2 text-center">
+                        {{ request()->parent }}
+                    </td>
+                    <td class="border border-gray-400 p-2">
+                        <input type="text" name="work_planning" class="bg-transparent h-8 w-full border-0 border-b focus:rounded-lg focus:border-0 focus:ring-caribbean">
+                    </td>
+                    <td class="border border-gray-400 p-2">
+                        <input type="text" name="target" class="bg-transparent h-8 w-full border-0 border-b focus:rounded-lg focus:border-0 focus:ring-caribbean">
+                    </td>
+                    <td class="border border-gray-400 p-2">
+                        <input type="text" name="achieve" class="bg-transparent h-8 w-full border-0 border-b focus:rounded-lg focus:border-0 focus:ring-caribbean">
+                    </td>
+                    <td class="border border-gray-400 p-2">
+                        <input type="date" name="time_target" class="bg-transparent h-8 w-full border-0 border-b focus:rounded-lg focus:border-0 focus:ring-caribbean">
+                    </td>
+                    <td class="border border-gray-400 p-2 w-1/5">
+                        <input type="file" name="document" class="bg-gray-50 w-full border border-gray-300 text-xs text-jet rounded-lg cursor-pointer">
+                    </td>
+                    <td class="border border-gray-400 p-2"></td>
+                    <td class="border border-gray-400 p-2"></td>
+                    <td class="border border-gray-400 p-2"></td>
+                    <td class="border border-gray-400 p-2"></td>
+                    <td class="border border-gray-400 p-2">
+                        <button type="submit" class="border-0 bg-caribbean text-white rounded-lg p-2 w-full">Simpan</button>
+                    </td>
+                </tr>
+                @endif
+            </table>
+        </form>
+    </div>
 
     <script>
         function actions(event, id) {
-            location.href = 'performace-unit?' + event.value + '=' + id
+            // location.href = 'performance-unit?' + event.value + '=' + id
+            var action = event.value;
+            if (action === 'hapus_id') {
+                if (confirm('Yakin ingin menghapus?')) {
+                    document.getElementById('delete-form-' + id).submit();
+                }
+            } else if (action === 'edit_id') {
+                location.href = 'performance-unit?' + action + '=' + id;
+            } else {
+                location.href = 'performance-unit?' + action + '=' + id;
+            }
         }
     </script>
 @endsection

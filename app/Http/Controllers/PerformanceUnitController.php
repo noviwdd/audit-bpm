@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PerformanceUnit;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -11,11 +12,18 @@ class PerformanceUnitController extends Controller
 {
     public function index(Request $request)
     {
+        $selectedYear = $request->input('year', date('Y'));
         $rowCreated = $this->createNewRows($request);
         if ($rowCreated) return redirect()->route('performance-unit.create');
-
-        $data = PerformanceUnit::where('unit_id', Auth::user()->unit_id)->where('year', 2024)->orderBy('index_position')->get();
-        return view('performance-unit.index', ['data' => $data]);
+        $unit = Unit::where('id', Auth::user()->unit_id)->first();
+        $data = PerformanceUnit::where('unit_id', Auth::user()->unit_id)->where('year', $selectedYear)->orderBy('index_position')->get();
+        $years = range(date('Y'), date('Y') - 5);
+        return view('performance-unit.index', [
+            'data' => $data,
+            'unit' => $unit,
+            'selectedYear' => $selectedYear,
+            'years' => $years
+        ]);
     }
 
     public function createNewRows(Request $request)
@@ -62,7 +70,7 @@ class PerformanceUnitController extends Controller
     {
         $latestIndexPoisition = PerformanceUnit::where('parent_id', null)->orderByDesc('index_position')->pluck('index_position');
         PerformanceUnit::create([
-            'work_planing' => $request->work_planing,
+            'work_planning' => $request->work_planning,
             'unit_id' => Auth::user()->unit_id,
             'year' => 2024,
             'target' => $request->target,
@@ -77,7 +85,7 @@ class PerformanceUnitController extends Controller
 
     public function update(Request $request, int $id) {
         PerformanceUnit::find($id)->update([
-            'work_planing' => $request->work_planing,
+            'work_planning' => $request->work_planning,
             'target' => $request->target,
             'achieve' => $request->achieve,
             'time_target' => $request->time_target,
@@ -85,5 +93,28 @@ class PerformanceUnitController extends Controller
         ]);
 
         return redirect()->route('performance-unit.create');
+    }
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            $deletedItem = PerformanceUnit::findOrFail($id);
+            $deletedIndexPosition = $deletedItem->index_position;
+
+            $deletedItem->delete();
+
+            PerformanceUnit::where('parent_id', $deletedItem->parent_id)
+                ->where('index_position', '>', $deletedIndexPosition)
+                ->decrement('index_position');
+
+
+            DB::commit();
+
+            return redirect()->route('performance-unit.index')->with('success', 'Data berhasil dihapus');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('performance-unit.index')->with('error', 'Terjadi kesalahan saat menghapus data');
+        }
     }
 }
