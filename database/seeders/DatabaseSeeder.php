@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Unit;
 use App\Models\User;
 use Diatria\LaravelInstant\Models\Permission;
 use Diatria\LaravelInstant\Models\Role;
@@ -18,10 +19,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('users')->truncate();
-        DB::table('roles')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('role_permissions')->truncate();
         DB::table('permissions')->truncate();
+        DB::table('users')->truncate();
+        DB::table('units')->truncate();
+        DB::table('roles')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $permissions = [
             'can_create_management_units',
@@ -55,21 +59,24 @@ class DatabaseSeeder extends Seeder
             'name' => 'Super Admin',
             'email' => 'superadmin@gmail.com',
             'password' => bcrypt(123456),
-            'role_id' => Role::create(['name' => 'Super Admin'])->id
+            'role_id' => Role::create(['name' => 'Super Admin'])->id,
+            'unit_id' => Unit::create(['name' => 'admin'])->id
         ]);
 
         User::create([
             'name' => 'Auditor',
             'email' => 'auditor@gmail.com',
             'password' => bcrypt(123456),
-            'role_id' => Role::create(['name' => 'Auditor'])->id
+            'role_id' => Role::create(['name' => 'Auditor'])->id,
+            'unit_id' => Unit::create(['name' => 'BPM'])->id
         ]);
-        
+
         User::create([
             'name' => 'Unit',
             'email' => 'unit@gmail.com',
             'password' => bcrypt(123456),
-            'role_id' => Role::create(['name' => 'Unit'])->id
+            'role_id' => Role::create(['name' => 'Unit'])->id,
+            'unit_id' => Unit::create(['name' => 'Prodi S1 Teknologi Informasi'])->id
         ]);
 
         foreach (DB::table('permissions')->pluck('id') as $permissionID) {
