@@ -32,34 +32,48 @@ class QuestionController extends Controller
 
     public function edit($id = null)
     {
-        $question = $id ? Questions::with('choices', 'inputs')->findOrFail($id) : new Questions();
-        return view('management-question.edit', compact('question'));
+        $question = $id ? Questions::with('choices', 'inputs', 'subCriteria', 'subCriteria.criteria')->findOrFail($id) : new Questions();
+        $criteria = Criteria::all();
+        $subCriteria = SubCriteria::all()->groupBy('criteria_id');
+        return view('management-question.edit', [
+            'question' => $question,
+            'criteria' => $criteria,
+            'subCriteria' => $subCriteria
+        ]);
     }
 
     public function store(Request $request, $id = null)
     {
         $question = Questions::updateOrCreate(
-            ['id' => $id],
+            [
+                'id' => $id,
+                'code' => $request->code
+            ],
             [
                 'main_question' => $request->main_question,
                 'type' => $request->type,
+                'sub_criteria_id' => $request->sub_criteria,
             ]
         );
 
+        $question->choices()->delete();
+        $question->inputs()->delete();
+
         if ($question->type === 'option') {
-            $question->inputs()->delete();
-            $question->choices()->delete();
             if (!empty($request->choices)) {
                 foreach ($request->choices as $choice) {
-                    $question->choices()->create($choice);
+                    if (isset($choice['value']) && isset($choice['description'])) {
+                        $question->choices()->create($choice);
+                    }
                 }
             }
         } elseif ($question->type === 'input') {
-            $question->choices()->delete();
-            $question->inputs()->delete();
+            // Simpan input jika tipe adalah 'input'
             if (!empty($request->inputs)) {
                 foreach ($request->inputs as $input) {
-                    $question->inputs()->create($input);
+                    if (isset($input['label']) && isset($input['input_question'])) {
+                        $question->inputs()->create($input);
+                    }
                 }
             }
         }

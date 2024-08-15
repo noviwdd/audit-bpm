@@ -2,20 +2,29 @@
 @section('title', $question ? 'Edit Pertanyaan' : 'Buat Pertanyaan')
 @section('content')
     <div class="flex justify-between items-center pb-3">
-        <h1 class="text-xl font-bold text-gray-700">{{ $question ? 'Edit Pertanyaan' : 'Buat Pertanyaan' }}</h1>
+        <h1 class="text-xl font-bold text-gray-700">{{ $question->id ? 'Edit Pertanyaan' : 'Buat Pertanyaan' }}</h1>
     </div>
 
     <div class="bg-white p-6 rounded-lg shadow-md mt-6">
         <form action="{{ $question ? route('questions.store', $question->id) : route('questions.store') }}" method="POST">
             @csrf
-            @if($question)
-                {{--  @method('PUT')  --}}
 
-                <div class="mb-6 flex flex-row gap-2">
-                    <p class="font-bold text-gray-700">Kode Pertanyaan:</p>
-                    <p class="font-bold">{{ $question->code }}</p>
-                </div>
-            @endif
+            <div class="mb-6 flex flex-row gap-1 items-center">
+                <p class="font-bold text-gray-700">Kode Pertanyaan:</p>
+                <input type="text" name="code" id="code" value="{{ $question->code }}" class="text-sm rounded-lg border-gray-300 focus:ring-1">
+            </div>
+
+            <div class="mb-6 flex flex-row gap-2">
+                <select name="criteria" id="criteria" class="text-sm border border-gray-300 rounded-lg">
+                    <option value="" disabled selected>Kriteria</option>
+                    @foreach ($criteria as $item)
+                        <option value="{{ $item->id }}" {{ old('criteria', $question->subCriteria->criteria->name ?? '') === $item->name ? 'selected' : '' }}>{{ $item->name }}</option>
+                    @endforeach
+                </select>
+                <select name="sub_criteria" id="sub_criteria" class="text-sm border border-gray-300 rounded-lg">
+                    <option value="" disabled selected>Sub Kriteria</option>
+                </select>
+            </div>
 
             <div class="mb-6">
                 <label for="question" class="block font-medium text-gray-700">Pertanyaan:</label>
