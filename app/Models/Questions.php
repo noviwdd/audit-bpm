@@ -33,4 +33,9 @@ class Questions extends Model
     {
         return $this->hasMany(QuestionChoices::class, 'question_id');
     }
+
+    public function weights()
+    {
+        return $this->hasMany(Weight::class, 'question_id');
+    }
 }
