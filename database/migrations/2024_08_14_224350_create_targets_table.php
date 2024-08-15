@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('achievements', function (Blueprint $table) {
+        Schema::create('targets', function (Blueprint $table) {
             $table->id();
-            $table->integer('unit_id');
-            $table->text('question_id');
-            $table->decimal('achieve_answer', 10, 7);
+            $table->foreignId('unit_id')->constrained()->onDelete('cascade');
+            $table->foreignId('question_id')->constrained()->onDelete('cascade');
+            $table->decimal('target_answer', 10, 7);
             $table->timestamps();
         });
     }
@@ -25,6 +25,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('achievements');
+        Schema::dropIfExists('targets');
     }
 };
+

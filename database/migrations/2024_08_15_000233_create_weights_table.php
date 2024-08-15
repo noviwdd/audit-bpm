@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('scores', function (Blueprint $table) {
+        Schema::create('weights', function (Blueprint $table) {
             $table->id();
-            $table->integer('unit_id');
-            $table->string('question_id');
-            $table->decimal('target_score', 10, 7);
-            $table->decimal('achieve_score', 10, 7);
+            $table->foreignId('question_id')->constrained('questions')->onDelete('cascade');
+            $table->decimal('weight', 10, 7);
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('scores');
+        Schema::dropIfExists('weights');
     }
 };
