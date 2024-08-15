@@ -100,30 +100,28 @@
                 </a>
             </li>  --}}
             <li>
-                <button type="button"
-                    class="flex items-center p-2 w-full text-sm font-medium text-white rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700"
-                    aria-controls="dropdown-authentication" data-collapse-toggle="dropdown-authentication">
-                    <svg class="w-6 h-6 text-white group-hover:text-jet dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                        <path fill-rule="evenodd" d="M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6Zm4.996 2a1 1 0 0 0 0 2h.01a1 1 0 1 0 0-2h-.01ZM11 8a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2h-6Zm-4.004 3a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2h-.01ZM11 11a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2h-6Zm-4.004 3a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2h-.01ZM11 14a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2h-6Z" clip-rule="evenodd"/>
+                <a href="{{ route('management-unit.index') }}"
+                    class="{{ request()->is('manajemen-unit') ? 'bg-gray-100 text-jet' : 'text-white'}} flex items-center p-2 text-sm font-medium rounded-lg dark:text-white hover:bg-gray-100 hover:text-jet dark:hover:bg-gray-700 group">
+                    <svg aria-hidden="true"
+                        class="w-5 h-5 transition duration-75 dark:text-gray-400 group-hover:text-jet dark:group-hover:text-jet"
+                        fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
+                        <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
                     </svg>
-                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Manajemen Data</span>
-                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd"
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            clip-rule="evenodd"></path>
+                    <span class="ml-3">Manajemen Unit</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('management-user.index') }}"
+                    class="{{ request()->is('manajemen-pengguna') ? 'bg-gray-100 text-jet' : 'text-white'}} flex items-center p-2 text-sm font-medium rounded-lg dark:text-white hover:bg-gray-100 hover:text-jet dark:hover:bg-gray-700 group">
+                    <svg aria-hidden="true"
+                        class="w-5 h-5 transition duration-75 dark:text-gray-400 group-hover:text-jet dark:group-hover:text-jet"
+                        fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
+                        <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
                     </svg>
-                </button>
-                <ul id="dropdown-authentication" class="py-2 space-y-2">
-                    <li>
-                        <a href="{{route('management-unit.index')}}"
-                            class="{{ request()->is('manajemen-unit') ? 'bg-gray-100 text-jet' : 'text-white' }} flex items-center p-2 pl-11 w-full text-sm font-medium rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700">Unit</a>
-                    </li>
-                    <li>
-                        <a href="{{route('management-user.index')}}"
-                            class="{{ request()->is('manajemen-pengguna') ? 'bg-gray-100 text-jet' : 'text-white' }} flex items-center p-2 pl-11 w-full text-sm font-medium rounded-lg transition duration-75 group hover:bg-gray-100 hover:text-jet dark:text-white dark:hover:bg-gray-700">User</a>
-                    </li>
-                </ul>
+                    <span class="ml-3">Manajemen Pengguna</span>
+                </a>
             </li>
             <li>
                 <button type="button"
@@ -161,6 +159,31 @@
                         <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
                     </svg>
                     <span class="ml-3">Master Data Pertanyaan</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('question-weight.index') }}"
+                    class="{{ request()->is('bobot') ? 'bg-gray-100 text-jet' : 'text-white'}} flex items-center p-2 text-sm font-medium rounded-lg dark:text-white hover:bg-gray-100 hover:text-jet dark:hover:bg-gray-700 group">
+                    <svg aria-hidden="true"
+                        class="w-5 h-5 transition duration-75 dark:text-gray-400 group-hover:text-jet dark:group-hover:text-jet"
+                        fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
+                        <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
+                    </svg>
+                    <span class="ml-3">Master Data Bobot</span>
+                </a>
+            </li>
+            <hr class="h-px my-10 bg-gray-200 border-0 dark:bg-gray-700">
+            <li class="py-3">
+                <a href="{{ route('performance-unit.index') }}"
+                    class="{{ request()->is('performance-unit') ? 'bg-gray-100 text-jet' : 'text-white'}} flex items-center p-2 text-sm font-medium rounded-lg dark:text-white hover:bg-gray-100 hover:text-jet dark:hover:bg-gray-700 group">
+                    <svg aria-hidden="true"
+                        class="w-5 h-5 transition duration-75 dark:text-gray-400 group-hover:text-jet dark:group-hover:text-jet"
+                        fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
+                        <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
+                    </svg>
+                    <span class="ml-3">Evaluasi Kinerja Unit</span>
                 </a>
             </li>
         </ul>
