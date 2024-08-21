@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\QuestionsHelper;
+use App\Models\Achievement;
+use App\Models\Criteria;
+use App\Models\Questions;
 use App\Models\Target;
+use App\Utils\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +17,11 @@ class TargetController extends Controller
 {
     private $questionsHelper;
 
+    protected $permission = [
+        "view" => "can_view_target",
+        "save" => "can_save_target"
+    ];
+
     public function __construct()
     {
         $this->questionsHelper = new QuestionsHelper();
@@ -20,34 +29,39 @@ class TargetController extends Controller
 
     public function index(Request $request)
     {
+        (new Permission($this->permission ?? null))->can("view");
         $index = $request->query('index', 0);
-        $allQuestions = collect($this->questionsHelper->flattenQuestions());
-        $question = $allQuestions->map(function ($item) {
-            return collect($item)->put('code', $item['code'],)
-            ->put('weight', $this->questionsHelper->getWeight($item['code']));
-        })->groupBy('criteria');
 
-        $criteriaKeys = $question->keys()->all();
-        $currentCriteria = $criteriaKeys[$index];
-
-        $questionCounts = $question->map(function ($questions) {
-            return $questions->count();
+        $questions = Questions::with('inputs', 'choices', 'weights', 'subCriteria')->get();
+        $groupedQuestion = $questions->groupBy(function ($question) {
+            return $question->subCriteria->criteria->name;
         });
 
-        $answers = Target::where('unit_id', Auth::user()->unit_id)->get()->keyBy('question_id');
+        $criteriaKeys = Criteria::all();
+        $currentCriteria = $criteriaKeys[$index];
+
+        $answers = Achievement::where('unit_id', Auth::user()->unit_id)->get()->keyBy('question_id');
+        $target = Target::where('unit_id', Auth::user()->unit_id)->get()->keyBy('question_id');
+
+        $parsedAnswers = [];
+        foreach ($target as $answer) {
+            $parsedAnswers[$answer->question_id] = json_decode($answer->target_answer, true);
+        }
 
         return view('question.target', [
-            'questions' => $question[$currentCriteria],
+            'questions' => $groupedQuestion[$currentCriteria->name],
             'currentCriteria' => $currentCriteria,
-            'questionCounts' => $questionCounts,
+            'parsedAnswers' => $parsedAnswers,
             'criteriaKeys' => $criteriaKeys,
             'currentIndex' => $index,
             'answers' => $answers,
+            'target' => $target,
         ]);
     }
 
     public function save(Request $request)
     {
+        (new Permission($this->permission ?? null))->can("save");
         $data = $request->all();
 
         if (isset($data['answers'])) {

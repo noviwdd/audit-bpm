@@ -28,7 +28,7 @@
                 </tr>
             </table>
         </div>
-        <form action="{{ url('performance-unit', ['id' => request()->edit_id]) }}" method="POST">
+        <form action="{{ url('performance-unit', ['id' => request()->edit_id]) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @if (request()->has('edit_id'))
                 @method('PUT')
@@ -37,27 +37,21 @@
             <table class="border-collapse border border-slate-500 w-full mt-4 text-sm text-jet">
                 <tr>
                     <th colspan="6" class="border border-gray-400 p-2">Ketercapaian Kinerja Unit</th>
-                    <th colspan="4" class="border border-gray-400 p-2">Penilaian Auditor</th>
-                    <th></th>
+                    <th colspan="3" class="border border-gray-400 p-2">Penilaian Auditor</th>
                 </tr>
                 <tr>
-                    <th rowspan="2" class="border border-gray-400 p-2">NO</th>
-                    <th rowspan="2" class="border border-gray-400 p-2">Keterangan</th>
-                    <th rowspan="2" class="border border-gray-400 p-2">Target</th>
-                    <th rowspan="2" class="border border-gray-400 p-2">Realisasi</th>
-                    <th rowspan="2" class="border border-gray-400 p-2">Waktu Pelaksanaan</th>
-                    <th rowspan="2" class="border border-gray-400 p-2">Dokumen</th>
+                    <th class="border border-gray-400 p-2">NO</th>
+                    <th class="border border-gray-400 p-2">Keterangan</th>
+                    <th class="border border-gray-400 p-2">Target</th>
+                    <th class="border border-gray-400 p-2">Realisasi</th>
+                    <th class="border border-gray-400 p-2">Waktu Pelaksanaan</th>
+                    <th class="border border-gray-400 p-2">Dokumen</th>
 
-                    <th colspan="3" class="border border-gray-400 p-2">Evaluasi</th>
-                    <th rowspan="2" class="border border-gray-400 p-2">Catatan</th>
-                    <th></th>
+                    <th class="border border-gray-400 p-2">Evaluasi</th>
+                    <th class="border border-gray-400 p-2">Catatan</th>
+                    <th class="border border-gray-400 p-2"></th>
                 </tr>
-                <tr>
-                    <th class="border border-gray-400 p-2">Tidak Terpenuhi</th>
-                    <th class="border border-gray-400 p-2">Terpenuhi</th>
-                    <th class="border border-gray-400 p-2">Terlampaui</th>
-                    <th></th>
-                </tr>
+
                 @foreach ($data as $index => $item)
                     @if (request()->edit_id == $item->id)
                         <tr>
@@ -77,11 +71,11 @@
                                 <input type="text" name="time_target" class="bg-transparent h-8 w-full border-0 border-b text-sm focus:rounded-lg focus:border-0 focus:ring-caribbean" value="{{ $item->time_target }}">
                             </td>
                             <td class="border border-gray-400 p-2 w-1/5">
-                                <input type="file" name="document" class="bg-gray-50 w-full border border-gray-300 text-xs text-jet rounded-lg cursor-pointer" value="{{ $item->document }}">
+                                <input type="file" name="document" class="bg-gray-50 w-full border border-gray-300 text-xs text-jet rounded-lg cursor-pointer">
+                                @if ($item->document)
+                                    <a href="{{ asset('storage/' . $item->document) }}" class="text-blue-500" target="_blank">View Document</a>
+                                @endif
                             </td>
-                            <td class="border border-gray-400 p-2"></td>
-                            <td class="border border-gray-400 p-2"></td>
-                            <td class="border border-gray-400 p-2"></td>
                             <td class="border border-gray-400 p-2"></td>
                             <td class="border border-gray-400 p-2">
                                 <button type="submit" class="border-0 bg-caribbean text-white rounded-lg p-2 w-full">Simpan</button>
@@ -94,12 +88,15 @@
                             <td class="border border-gray-400 p-2 text-center">{{ $item->target }}</td>
                             <td class="border border-gray-400 p-2 text-center">{{ $item->achieve }}</td>
                             <td class="border border-gray-400 p-2 text-center">{{ $item->time_target }}</td>
-                            <td class="border border-gray-400 p-2 text-center">{{ $item->document }}</td>
+                            <td class="border border-gray-400 p-2 text-center">
+                                @if ($item->document)
+                                    <a href="{{ asset('storage/' . $item->document) }}" class="text-blue-500" target="_blank">View Document</a>
+                                @endif
+                            </td>
                             <td class="border border-gray-400 p-2 text-center"></td>
-                            <td class="border border-gray-400 p-2 text-center"></td>
-                            <td class="border border-gray-400 p-2 text-center"></td>
-                            <td class="border border-gray-400 p-2 text-center"></td>
+                            <td class="border border-gray-400 p-2"></td>
                             <td class="border border-gray-400 p-2">
+                                @if ($role_name === 'Unit' || $role_name == 'Super Admin')
                                 <select onchange="actions(this, '{{ $item->id }}')" class="rounded-lg border-caribbean/50 text-sm focus:ring-caribbean">
                                     <option value="" selected>Aksi</option>
                                     <option value="add_above">Add Above</option>
@@ -107,6 +104,7 @@
                                     <option value="edit_id">Edit</option>
                                     <option value="hapus_id">Hapus</option>
                                 </select>
+                                @endif
                             </td>
                             <form id="delete-form-{{ $item->id }}" action="{{ route('performance-unit.delete', $item->id) }}" method="POST" style="display: none;">
                                 @csrf
@@ -122,22 +120,30 @@
                         {{ request()->parent }}
                     </td>
                     <td class="border border-gray-400 p-2">
-                        <input type="text" name="work_planning" class="bg-transparent h-8 w-full border-0 border-b focus:rounded-lg focus:border-0 focus:ring-caribbean">
+                        @if ($role_name === 'Unit' || $role_name == 'Super Admin')
+                            <input type="text" name="work_planning" class="bg-transparent h-8 w-full border-0 border-b focus:rounded-lg focus:border-0 focus:ring-caribbean">
+                        @endif
                     </td>
                     <td class="border border-gray-400 p-2">
+                        @if ($role_name === 'Unit' || $role_name == 'Super Admin')
                         <input type="text" name="target" class="bg-transparent h-8 w-full border-0 border-b focus:rounded-lg focus:border-0 focus:ring-caribbean">
+                        @endif
                     </td>
                     <td class="border border-gray-400 p-2">
+                        @if ($role_name === 'Unit' || $role_name == 'Super Admin')
                         <input type="text" name="achieve" class="bg-transparent h-8 w-full border-0 border-b focus:rounded-lg focus:border-0 focus:ring-caribbean">
+                        @endif
                     </td>
                     <td class="border border-gray-400 p-2">
+                        @if ($role_name === 'Unit' || $role_name == 'Super Admin')
                         <input type="date" name="time_target" class="bg-transparent h-8 w-full border-0 border-b focus:rounded-lg focus:border-0 focus:ring-caribbean">
+                        @endif
                     </td>
                     <td class="border border-gray-400 p-2 w-1/5">
+                        @if ($role_name === 'Unit' || $role_name == 'Super Admin')
                         <input type="file" name="document" class="bg-gray-50 w-full border border-gray-300 text-xs text-jet rounded-lg cursor-pointer">
+                        @endif
                     </td>
-                    <td class="border border-gray-400 p-2"></td>
-                    <td class="border border-gray-400 p-2"></td>
                     <td class="border border-gray-400 p-2"></td>
                     <td class="border border-gray-400 p-2"></td>
                     <td class="border border-gray-400 p-2">
@@ -156,6 +162,10 @@
             if (action === 'hapus_id') {
                 if (confirm('Yakin ingin menghapus?')) {
                     document.getElementById('delete-form-' + id).submit();
+                    axios.delete(`performance-unit/${id}`)
+                        .then(function() {
+                            location.reload()
+                        })
                 }
             } else if (action === 'edit_id') {
                 location.href = 'performance-unit?' + action + '=' + id;

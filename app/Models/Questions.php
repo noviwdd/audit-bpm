@@ -38,4 +38,19 @@ class Questions extends Model
     {
         return $this->hasMany(Weight::class, 'question_id');
     }
+
+    public function scores()
+    {
+        return $this->hasMany(Score::class, 'question_id');
+    }
+
+    public function targets()
+    {
+        return $this->hasMany(Target::class, 'question_id');
+    }
+
+    public function ahieves()
+    {
+        return $this->hasMany(Achievement::class, 'question_id');
+    }
 }

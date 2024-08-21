@@ -52,6 +52,7 @@ Route::get('/get-grafik-data', [GraphController::class, 'getChartData']);
 Route::get('/data-pertanyaan', [QuestionController::class, 'index'])->name('questions.index');
 Route::get('/pertanyaan/{id?}', [QuestionController::class, 'edit'])->name('questions.edit');
 Route::post('/pertanyaan/{id?}', [QuestionController::class, 'store'])->name('questions.store');
+Route::delete('/pertanyaan/{id}', [QuestionController::class, 'destroy'])->name('question.destroy');
 Route::get('/storeDumpQuestion', [QuestionController::class, 'storeDumpData']);
 
 Route::get('/storeDumpWeight', [WeightController::class, 'storeDataDump']);
