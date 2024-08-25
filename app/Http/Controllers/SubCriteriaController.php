@@ -19,7 +19,7 @@ class SubCriteriaController extends Controller
     {
         (new Permission($this->permission ?? null))->can("view");
         $criteria = Criteria::all();
-        $subCriteria = SubCriteria::with('criteria')->get();
+    $subCriteria = SubCriteria::with('criteria')->get();
         return view('sub-criteria.index')->with([
             'data' => $subCriteria,
             'criterias' => $criteria
@@ -48,6 +48,6 @@ class SubCriteriaController extends Controller
         $subCriteria = SubCriteria::findOrFail($id);
         $subCriteria->delete();
 
-        return redirect()->route('criteria.index');
+        return redirect()->route('sub-criteria.index');
     }
 }

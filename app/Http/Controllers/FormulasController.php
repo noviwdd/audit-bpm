@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Helpers\FormulasHelper;
 use App\Helpers\QuestionsHelper;
 use App\Models\Achievement;
+use App\Models\Criteria;
 use App\Models\Questions;
 use App\Models\Score;
 use App\Models\Target;
+use App\Models\Unit;
 use App\Models\Weight;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -28,11 +30,14 @@ class FormulasController extends Controller
 
     public function index(Request $request)
     {
-        // generate score
-        $this->generate();
 
         $unit_id = Auth::user()->unit_id;
-        $questions = Questions::all();
+        $criteria = Criteria::all();
+        $questions = Questions::with('subCriteria')->get();
+
+        $units = Unit::all();
+        $unit_id = $request->input('unit_id', Auth::user()->unit_id);
+
         $questionCode = Questions::query()->pluck('code');
         $predAccreditation = $this->predAccreditation();
         $score = Score::where('unit_id', $unit_id)->with('question')->get()->map(function ($score) {
@@ -45,11 +50,13 @@ class FormulasController extends Controller
         $totalTercapai = 0;
         $totalTidakTercapai = 0;
 
+        $this->generate();
+
         foreach ($questionCode as $code) {
             $shortCode = preg_replace('/[A-Z]$/', '', $code);
             if (!in_array($code, $displayedCodes)) {
                 $displayedCodes[] = $code;
-                $targetScore = $score[$code]['target_score'];
+                $targetScore = $score[$code]['target_score'] ?? 0;
                 $achieveScore = $score[$code]['achieve_score'] ?? 0;
                 $predValue = $predAccreditation[0][$shortCode] ?? 'N/A';
 
@@ -93,12 +100,14 @@ class FormulasController extends Controller
                 }
 
                 $questionData = $questions->firstWhere('code', $code);
+                $criteriaId = $questionData->subCriteria->criteria_id;
                 $questionText = $questionData['main_question'] ?? 'N/A';
 
 
                 $tableData[] = [
                     'code' => $code,
                     'question' => $questionText,
+                    'criteria_id' => $criteriaId,
                     'target_score' => number_format($targetScore, 2),
                     'achieve_score' => number_format($achieveScore, 2),
                     'sebutan' => $sebutan,
@@ -119,7 +128,9 @@ class FormulasController extends Controller
             'tableData' => $tableData,
             'persentaseTerlampaui' => number_format($persentaseTerlampaui, 2),
             'persentaseTercapai' => number_format($persentaseTercapai, 2),
-            'persentaseTidakTercapai' => number_format($persentaseTidakTercapai, 2)
+            'persentaseTidakTercapai' => number_format($persentaseTidakTercapai, 2),
+            'criteria' => $criteria,
+            'units' => $units
         ]);
     }
 

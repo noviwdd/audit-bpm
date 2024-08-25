@@ -41,7 +41,7 @@ Route::get('/target', [TargetController::class, 'index'])->name('target.index');
 Route::post('/target', [TargetController::class, 'save'])->name('target.save');
 
 // Score
-Route::get('/skor', [FormulasController::class, 'index']);
+Route::get('/skor', [FormulasController::class, 'index'])->name('skor.index');
 Route::get('/generate', [FormulasController::class, 'generate'])->name('formula.generate');
 
 // Graph

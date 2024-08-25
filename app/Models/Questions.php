@@ -36,7 +36,7 @@ class Questions extends Model
 
     public function weights()
     {
-        return $this->hasMany(Weight::class, 'question_id');
+        return $this->hasOne(Weight::class, 'question_id');
     }
 
     public function scores()
