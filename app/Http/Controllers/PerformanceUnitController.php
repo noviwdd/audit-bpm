@@ -4,15 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\PerformanceUnit;
 use App\Models\Unit;
-use App\Models\Criteria;
-use App\Models\SubCriteria;
 use Diatria\LaravelInstant\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\PerformanceUnitImport;
 
 class PerformanceUnitController extends Controller
 {
@@ -21,23 +17,17 @@ class PerformanceUnitController extends Controller
         $selectedYear = $request->input('year', date('Y'));
         $rowCreated = $this->createNewRows($request);
         if ($rowCreated) return redirect()->route('performance-unit.create');
-
-        $allUnits = Unit::all();
-        $unitId = $request->input('unit_id', Auth::user()->unit_id);
-        $unit = Unit::where('id', $unitId)->first();
-
-        $data = PerformanceUnit::where('unit_id', $unitId)
-            ->where('year', $selectedYear)
-            ->orderBy('index_position')->get();
-
+        $unit = Unit::where('id', Auth::user()->unit_id)->first();
+        $data = PerformanceUnit::where('unit_id', Auth::user()->unit_id)->where('year', $selectedYear)->orderBy('index_position')->get();
         $years = range(date('Y'), date('Y') - 5);
-        $role_name = Role::find(Auth::user()->role_id)->name;
-        $criteriaList = Criteria::all();
-        $subCriteriaList = SubCriteria::all();
-
-        return view('performance-unit.index', compact(
-            'data', 'unit', 'selectedYear', 'years', 'role_name', 'criteriaList', 'subCriteriaList', 'allUnits'
-        ));
+        $roleName = Role::find(Auth::user()->role_id);
+        return view('performance-unit.index', [
+            'data' => $data,
+            'unit' => $unit,
+            'selectedYear' => $selectedYear,
+            'years' => $years,
+            'role_name' => $roleName->name
+        ]);
     }
 
     public function createNewRows(Request $request)
@@ -46,34 +36,30 @@ class PerformanceUnitController extends Controller
         try {
             $rowCreated = null;
             if ($request->has('add_above')) {
-                $findIndex = PerformanceUnit::find($request->add_above);
-                $willBeChanges = PerformanceUnit::where('parent_id', $request->parent_id ?? null)
-                    ->where('index_position', '>=', $findIndex->index_position)->get();
-
+                $findInexPosition = PerformanceUnit::find($request->add_above);
+                $willBeChanges = PerformanceUnit::where('parent_id', $request->parent_id ?? null)->where('index_position', '>=', $findInexPosition->index_position)->get();
                 foreach ($willBeChanges as $item) {
-                    $item->update(['index_position' => $item->index_position + 1]);
+                    PerformanceUnit::find($item->id)->update(['index_position' => $item->index_position + 1]);
                 }
 
                 $rowCreated = PerformanceUnit::create([
                     'unit_id' => Auth::user()->unit_id,
-                    'year' => date('Y'),
-                    'index_position' => $findIndex->index_position
+                    'year' => 2024,
+                    'index_position' => $findInexPosition->index_position
                 ]);
             }
 
             if ($request->has('add_below')) {
-                $findIndex = PerformanceUnit::find($request->add_below);
-                $willBeChanges = PerformanceUnit::where('parent_id', $request->parent_id ?? null)
-                    ->where('index_position', '>', $findIndex->index_position)->get();
-
+                $findInexPosition = PerformanceUnit::find($request->add_below);
+                $willBeChanges = PerformanceUnit::where('parent_id', $request->parent_id ?? null)->where('index_position', '>', $findInexPosition->index_position)->get();
                 foreach ($willBeChanges as $item) {
-                    $item->update(['index_position' => $item->index_position + 1]);
+                    PerformanceUnit::find($item->id)->update(['index_position' => $item->index_position + 1]);
                 }
 
                 $rowCreated = PerformanceUnit::create([
                     'unit_id' => Auth::user()->unit_id,
-                    'year' => date('Y'),
-                    'index_position' => $findIndex->index_position + 1
+                    'year' => 2024,
+                    'index_position' => $findInexPosition->index_position + 1
                 ]);
             }
 
@@ -86,119 +72,49 @@ class PerformanceUnitController extends Controller
 
     public function create(Request $request)
     {
-        $latestIndex = PerformanceUnit::where('parent_id', null)
-                            ->orderByDesc('index_position')->pluck('index_position')->first() ?? 0;
-
+        $latestIndexPoisition = PerformanceUnit::where('parent_id', null)->orderByDesc('index_position')->pluck('index_position');
         $documentPath = null;
         if ($request->hasFile('document')) {
             $documentPath = $request->file('document')->store('documents', 'public');
         }
-
-        $data = [
+        PerformanceUnit::create([
             'work_planning' => $request->work_planning,
             'unit_id' => Auth::user()->unit_id,
-            'year' => $request->input('year', date('Y')),
+            'year' => 2024,
             'target' => $request->target,
             'achieve' => $request->achieve,
             'time_target' => $request->time_target,
             'document' => $documentPath,
-            'index_position' => $latestIndex + 1,
-        ];
-
-        $role = Role::find(Auth::user()->role_id)->name;
-        if (in_array($role, ['Auditor', 'Super Admin'])) {
-            $data['criteria_id'] = $request->criteria_id;
-            $data['sub_criteria_id'] = $request->sub_criteria_id;
-            $data['evaluation_score'] = (int) $request->evaluation_score;
-            $data['evaluation_auto'] = false;
-            $data['description'] = $request->note;
-        } else {
-            // Auto suggest untuk Unit
-            if (is_numeric($data['target']) && is_numeric($data['achieve'])) {
-                $target = (float) $data['target'];
-                $achieve = (float) $data['achieve'];
-                $percent = $target > 0 ? ($achieve / $target) * 100 : 0;
-
-                if ($percent <= 25) {
-                    $data['evaluation_score'] = 0;
-                } elseif ($percent <= 50) {
-                    $data['evaluation_score'] = 1;
-                } elseif ($percent <= 75) {
-                    $data['evaluation_score'] = 2;
-                } elseif ($percent < 100) {
-                    $data['evaluation_score'] = 3;
-                } else {
-                    $data['evaluation_score'] = 4;
-                }
-                $data['evaluation_auto'] = true;
-            }
-        }
-
-        PerformanceUnit::create($data);
-
-        return redirect()->route('performance-unit.index', [
-            'year' => $request->input('year', date('Y')),
-            'unit_id' => $request->input('unit_id')
+            'index_position' => collect($latestIndexPoisition)->first() + 1 ?? 1
         ]);
+
+        return redirect()->route('performance-unit.create');
     }
 
-    public function update(Request $request, int $id)
-    {
+    public function update(Request $request, int $id) {
         $performanceUnit = PerformanceUnit::findOrFail($id);
         $documentPath = $performanceUnit->document;
-
         if ($request->hasFile('document')) {
+            // Delete the old document if it exists
             if ($documentPath && Storage::exists('public/' . $documentPath)) {
                 Storage::delete('public/' . $documentPath);
             }
+            // Store the new document
             $documentPath = $request->file('document')->store('documents', 'public');
         }
 
-        $data = [
+        PerformanceUnit::find($id)->update([
             'work_planning' => $request->work_planning,
             'target' => $request->target,
             'achieve' => $request->achieve,
             'time_target' => $request->time_target,
             'document' => $documentPath,
-        ];
-
-        $role = Role::find(Auth::user()->role_id)->name;
-        if (in_array($role, ['Auditor', 'Super Admin'])) {
-            $data['criteria_id'] = $request->criteria_id;
-            $data['sub_criteria_id'] = $request->sub_criteria_id;
-            $data['evaluation_score'] = (int) $request->evaluation_score;
-            $data['evaluation_auto'] = false;
-            $data['description'] = $request->note;
-        } else {
-            if (is_numeric($data['target']) && is_numeric($data['achieve'])) {
-                $target = (float) $data['target'];
-                $achieve = (float) $data['achieve'];
-                $percent = $target > 0 ? ($achieve / $target) * 100 : 0;
-
-                if ($percent <= 25) {
-                    $data['evaluation_score'] = 0;
-                } elseif ($percent <= 50) {
-                    $data['evaluation_score'] = 1;
-                } elseif ($percent <= 75) {
-                    $data['evaluation_score'] = 2;
-                } elseif ($percent < 100) {
-                    $data['evaluation_score'] = 3;
-                } else {
-                    $data['evaluation_score'] = 4;
-                }
-                $data['evaluation_auto'] = true;
-            }
-        }
-
-        $performanceUnit->update($data);
-
-        return redirect()->route('performance-unit.index', [
-            'year' => $request->input('year', date('Y')),
-            'unit_id' => $request->input('unit_id')
         ]);
+
+        return redirect()->route('performance-unit.create');
     }
 
-    public function destroy(Request $request, $id)
+    public function destroy($id)
     {
         DB::beginTransaction();
         try {
@@ -211,27 +127,13 @@ class PerformanceUnitController extends Controller
                 ->where('index_position', '>', $deletedIndexPosition)
                 ->decrement('index_position');
 
+
             DB::commit();
 
-            return redirect()->route('performance-unit.index', ['year' => $request->input('year', date('Y'))])
-                            ->with('success', 'Data berhasil dihapus');
+            return redirect()->route('performance-unit.index')->with('success', 'Data berhasil dihapus');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('performance-unit.index')
-                            ->with('error', 'Terjadi kesalahan saat menghapus data');
+            return redirect()->route('performance-unit.index')->with('error', 'Terjadi kesalahan saat menghapus data');
         }
-    }
-
-    public function import(Request $request)
-    {
-        $request->validate([
-            'import_file' => 'required|mimes:xlsx,xls,csv|max:2048',
-        ]);
-
-        $year = $request->input('year', date('Y'));
-        Excel::import(new PerformanceUnitImport($year), $request->file('import_file'));
-
-        return redirect()->route('performance-unit.index', ['year' => $year])
-                        ->with('success', 'Data berhasil diimpor.');
     }
 }

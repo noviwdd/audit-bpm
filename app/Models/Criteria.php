@@ -10,7 +10,6 @@ class Criteria extends Model
 {
     use HasFactory;
 
-    protected $table = 'criterias';
     protected $fillable = ['name'];
 
     public function subcriteria()

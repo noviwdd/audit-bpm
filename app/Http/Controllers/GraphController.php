@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Score;
 use App\Models\Questions;
-use App\Models\PerformanceUnit;
 use Illuminate\Http\Request;
 use App\Helpers\QuestionsHelper;
 use Illuminate\Support\Facades\Auth;
@@ -174,38 +173,4 @@ class GraphController extends Controller
             'allData' => [$allData],
         ]);
     }
-
-    public function grafikEvaluasi()
-    {
-        $units = \App\Models\Unit::all();
-        return view('performance-unit.graph-evaluasi', compact('units'));
-    }
-
-    public function getEvaluasiChartData(Request $request)
-    {
-        $unit_id = $request->get('unit_id', Auth::user()->unit_id);
-        $data = PerformanceUnit::where('unit_id', $unit_id)
-            ->with('subCriteria.criteria')
-            ->get()
-            ->groupBy(function ($item) {
-                return $item->subCriteria->criteria->name ?? '-';
-            })
-            ->map(function ($items, $criteria) {
-                return [
-                    'criteria' => $criteria,
-                    'labels' => $items->pluck('work_planning')->toArray(),
-                    'datasets' => [[
-                        'label' => $criteria,
-                        'data' => $items->pluck('evaluation_score')->toArray(),
-                        'backgroundColor' => 'rgba(75, 192, 192, 0.2)',
-                        'borderColor' => 'rgba(75, 192, 192, 1)',
-                        'borderWidth' => 1,
-                    ]]
-                ];
-            })->values();
-
-        return response()->json($data);
-    }
-
-
 }
