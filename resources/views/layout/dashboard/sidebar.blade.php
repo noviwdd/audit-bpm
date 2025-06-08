@@ -170,7 +170,7 @@
                 </a>
             </li>
             <hr class="h-px my-10 bg-gray-200 border-0 dark:bg-gray-700">
-            <li class="py-3">
+            <li>
                 <a href="{{ route('performance-unit.index') }}"
                     class="{{ request()->is('performance-unit') ? 'bg-gray-100 text-jet' : 'text-white'}} flex items-center p-2 text-sm font-medium rounded-lg dark:text-white hover:bg-gray-100 hover:text-jet dark:hover:bg-gray-700 group">
                     <svg aria-hidden="true"
@@ -182,6 +182,21 @@
                     <span class="ml-3">Evaluasi Kinerja Unit</span>
                 </a>
             </li>
+            <li>
+                <a href="{{ url('grafik-evaluasi') }}"
+                    class="{{ request()->is('grafik-evaluasi') ? 'bg-gray-100 text-jet' : 'text-white' }}
+                        flex items-center p-2 text-sm font-medium rounded-lg
+                        dark:text-white hover:bg-gray-100 hover:text-jet dark:hover:bg-gray-700 group">
+                    <svg aria-hidden="true"
+                        class="w-5 h-5 transition duration-75 dark:text-gray-400 group-hover:text-jet dark:group-hover:text-jet"
+                        fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
+                        <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
+                    </svg>
+                    <span class="ml-3">Peta Capaian Kinerja Unit</span>
+                </a>
+            </li>
+
         </ul>
         {{--  <ul class="pt-5 mt-5 space-y-2 border-t border-gray-200 dark:border-gray-700">
             <li>

@@ -93,6 +93,9 @@ Route::get('performance-unit', [PerformanceUnitController::class, 'index'])->nam
 Route::post('performance-unit', [PerformanceUnitController::class, 'create'])->name('performance-unit.create');
 Route::put('performance-unit/{id}', [PerformanceUnitController::class, 'update'])->name('performance-unit.update');
 Route::delete('performance-unit/{id}', [PerformanceUnitController::class, 'destroy'])->name('performance-unit.delete');
+Route::post('/performance-unit/import', [PerformanceUnitController::class, 'import'])->name('performance-unit.import');
 
+Route::get('/grafik-evaluasi', [GraphController::class, 'grafikEvaluasi'])->name('grafik.evaluasi');
+Route::get('/get-evaluasi-chart-data', [GraphController::class, 'getEvaluasiChartData'])->name('grafik.evaluasi.data');
 // Question
 
