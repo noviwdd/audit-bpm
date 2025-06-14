@@ -184,7 +184,9 @@ class GraphController extends Controller
     public function getEvaluasiChartData(Request $request)
     {
         $unit_id = $request->get('unit_id', Auth::user()->unit_id);
+        $year = $request->get('year', date('Y'));
         $data = PerformanceUnit::where('unit_id', $unit_id)
+            ->where('year', $year)
             ->with('subCriteria.criteria')
             ->get()
             ->groupBy(function ($item) {

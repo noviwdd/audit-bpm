@@ -97,5 +97,6 @@ Route::post('/performance-unit/import', [PerformanceUnitController::class, 'impo
 
 Route::get('/grafik-evaluasi', [GraphController::class, 'grafikEvaluasi'])->name('grafik.evaluasi');
 Route::get('/get-evaluasi-chart-data', [GraphController::class, 'getEvaluasiChartData'])->name('grafik.evaluasi.data');
+Route::get('/performance-unit/evaluasi-report', [PerformanceUnitController::class, 'evaluasiReport'])->name('performance-unit.evaluasi-report');
 // Question
 

@@ -49,7 +49,7 @@
 
     <div class="flex justify-between items-center mb-4">
         @if ($role_name === 'Unit' || $role_name == 'Super Admin')
-            <form action="{{ route('performance-unit.import') }}" method="POST" enctype="multipart/form-data" class="inline-block bg-caribbean rounded text-white font-bold">
+            <form action="{{ route('performance-unit.import') }}" method="POST" enctype="multipart/form-data" class="inline-block bg-caribbean rounded text-white font-bold p-2">
                 @csrf
                 <input type="hidden" name="year" value="{{ $selectedYear }}">
                 <label for="import_file" class="hover:bg-green-700 text-xs py-2 px-3 rounded cursor-pointer">
@@ -58,6 +58,11 @@
                 <input id="import_file" type="file" name="import_file" class="hidden" onchange="this.form.submit()">
             </form>
         @endif
+        <a href="{{ asset('storage/template/Template_Import_Evaluasi_Kinerja.xlsx') }}"
+            class="inline-block text-xs font-semibold py-2 px-3 rounded mb-2"
+            download>
+            Download Template Excel
+        </a>
     </div>
 
     <form action="{{ request()->has('edit_id') ? url('performance-unit/' . request()->edit_id . '?year=' . $selectedYear) : url('performance-unit?year=' . $selectedYear) }}" method="POST" enctype="multipart/form-data">

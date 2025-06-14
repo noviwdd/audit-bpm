@@ -234,4 +234,87 @@ class PerformanceUnitController extends Controller
         return redirect()->route('performance-unit.index', ['year' => $year])
                         ->with('success', 'Data berhasil diimpor.');
     }
+
+    public function evaluasiReport(Request $request)
+    {
+        $selectedYear = $request->input('year', date('Y'));
+        $selectedUnitId = $request->input('unit_id', Auth::user()->unit_id);
+
+        $data = PerformanceUnit::with('subCriteria.criteria')
+            ->where('unit_id', $selectedUnitId)
+            ->where('year', $selectedYear)
+            ->orderBy('index_position')
+            ->get();
+
+        $units = Unit::all();
+        $criteria = Criteria::all();
+        $years = range(date('Y'), date('Y') - 5);
+
+        $tableData = $data->map(function ($item) {
+            $criteriaName = $item->subCriteria->criteria->name ?? '-';
+            $subCriteriaName = $item->subCriteria->name ?? '-';
+            $target = (float) $item->target;
+            $achieve = (float) $item->achieve;
+            $percent = $target > 0 ? ($achieve / $target) * 100 : 0;
+
+            $sebutanMap = [
+                0 => ['Sangat Kurang', '[#D32F2F]'],
+                1 => ['Kurang', '[#FF9800]'],
+                2 => ['Cukup', 'amber'],
+                3 => ['Baik', 'teal'],
+                4 => ['Sangat Baik', 'caribbean'],
+            ];
+            $score = is_numeric($item->evaluation_score) ? (int) $item->evaluation_score : 0;
+            $sebutan = $sebutanMap[$score][0];
+            $sebutanClass = $sebutanMap[$score][1];
+
+            $ketercapaian = '';
+            if ($target > $achieve || ($target == 0 && $achieve == 0)) {
+                $ketercapaian = 'Tidak Tercapai';
+                $ketercapaianClass = '[#D32F2F]';
+            } elseif ($target == $achieve) {
+                $ketercapaian = 'Tercapai';
+                $ketercapaianClass = 'cerulean';
+            } elseif ($target < $achieve) {
+                $ketercapaian = 'Terlampaui';
+                $ketercapaianClass = 'caribbean';
+            }
+
+            return [
+                'criteria_id' => $item->criteria_id,
+                'criteria_name' => $criteriaName,
+                'sub_criteria_name' => $subCriteriaName,
+                'work_planning' => $item->work_planning,
+                'target_score' => $item->target,
+                'achieve_score' => $item->achieve,
+                'sebutan' => $sebutan,
+                'sebutan_class' => $sebutanClass,
+                'ketercapaian' => $ketercapaian,
+                'ketercapaian_class' => $ketercapaianClass,
+            ];
+        });
+
+        $total = $data->count();
+        $jumlahTerlampaui = $data->filter(function ($item) {
+            return (float)$item->achieve > (float)$item->target;
+        })->count();
+
+        $jumlahTercapai = $data->filter(function ($item) {
+            return (float)$item->achieve == (float)$item->target;
+        })->count();
+
+        $jumlahTidakTercapai = $data->filter(function ($item) {
+            return (float)$item->achieve < (float)$item->target;
+        })->count();
+
+        $persentaseTerlampaui = $total > 0 ? round(($jumlahTerlampaui / $total) * 100, 0) : 0;
+        $persentaseTercapai = $total > 0 ? round(($jumlahTercapai / $total) * 100, 0) : 0;
+        $persentaseTidakTercapai = $total > 0 ? round(($jumlahTidakTercapai / $total) * 100, 0) : 0;
+
+        return view('performance-unit.evaluasi-report', compact(
+            'tableData', 'criteria', 'units', 'years',
+            'selectedYear', 'selectedUnitId', 'persentaseTerlampaui', 'persentaseTercapai', 'persentaseTidakTercapai'
+        ));
+    }
+
 }

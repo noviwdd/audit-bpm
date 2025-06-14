@@ -10,9 +10,13 @@ class PerformanceUnit extends Model
     use HasFactory;
 
     protected $fillable = [
-        'description',
+        'unit_id',
         'work_planning',
-        'parent_id',
+        'year',
+        'target',
+        'achieve',
+        'time_target',
+        'document',
         'index_position',
         'criteria_id',
         'sub_criteria_id',
