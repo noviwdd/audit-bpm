@@ -1,7 +1,10 @@
 <script>
     async function fetchChartData() {
         try {
-            const response = await axios.get('/get-grafik-data');
+            const unitId = document.getElementById('unit_id')?.value ?? '';
+            const response = await axios.get('/get-grafik-data', {
+                params: { unit_id: unitId }
+            });
             const data = response.data;
 
             const chartContainer = document.getElementById('chartContainer');

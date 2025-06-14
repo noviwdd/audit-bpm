@@ -5,6 +5,16 @@
         <p class="text-xl font-bold text-gray-600 whitespace-nowrap">Laporan Penilaian Unit</p>
     </div>
 
+    <form method="GET" action="{{ route('grafik.index') }}" class="my-4">
+        <select name="unit_id" id="unit_id" onchange="this.form.submit()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500">
+            <option value="" disabled selected>Pilih Unit</option>
+            @foreach ($units as $unit)
+                <option value="{{ $unit->id }}" {{ request('unit_id', $default_unit_id) == $unit->id ? 'selected' : '' }}>
+                    {{ $unit->name }}
+                </option>
+            @endforeach
+        </select>
+    </form>
     <div class="grid 2xl:grid-cols-2 grid-cols-1 gap-5 pb-3 max-h-min">
             {{--  Rekap Nilai  --}}
             <div class="bg-white p-4 mt-3 rounded-lg shadow overflow-x-auto h-screen">

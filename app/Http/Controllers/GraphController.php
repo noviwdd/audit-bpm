@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Helpers\QuestionsHelper;
 use Illuminate\Support\Facades\Auth;
 use App\Models\PerformanceUnit;
+use App\Models\Unit;
 
 class GraphController extends Controller
 {
@@ -20,9 +21,10 @@ class GraphController extends Controller
 
     public function index(Request $request)
     {
-        $unit_id = Auth::user()->unit_id;
+        $unit_id = $request->input('unit_id', Auth::user()->unit_id);
         session(['unit_id' => $unit_id]);
 
+        $units = Unit::all();
         $questions = Questions::with('subCriteria')->get();
         $questionCode = Questions::query()->pluck('code');
         $score = Score::where('unit_id', $unit_id)->with('question')->get()->map(function ($score) {
@@ -111,7 +113,9 @@ class GraphController extends Controller
             'saran_perbaikan' => $saranPerbaikan,
             'sumAvg' => $sumAvg,
             'sebutan' => $sebutan,
-            'sebutan_class' => $sebutanClass
+            'sebutan_class' => $sebutanClass,
+            'units' => $units,
+            'default_unit_id' => $unit_id,
         ]);
     }
 
@@ -119,7 +123,7 @@ class GraphController extends Controller
     {
         // $allQuestions = collect($this->questionsHelper->flattenQuestions());
         $questions = Questions::all();
-        $unit_id = Auth::user()->unit_id;
+        $unit_id = request()->query('unit_id', Auth::user()->unit_id);
         $scores = Score::where('unit_id', $unit_id)->get()->keyBy('question_id');
 
         $score = Score::where('unit_id', $unit_id)->with('question')->get()->map(function ($score) {
